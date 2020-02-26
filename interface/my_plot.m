@@ -108,11 +108,13 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
     k = 1;
     
     axs = {};
+    
     while(i <= n_windows)
         hfig = my_figure();
         
         is_multiplot = false;
         axis_i = {};
+        
         for j = 1:nrows*ncols
             id_plot = ind2sub([nrows, ncols], j);
             axis_ij = subplot(nrows, ncols, id_plot);
@@ -155,8 +157,6 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                         markers_f = markers_j{f};
                         legends_f = legends_j{f};
                         
-                        markers_f
-                        legends_f
                         tail_x(:, multiplot_idx)
                         
                         if(~isfield(plot_config, 'plot_type'))

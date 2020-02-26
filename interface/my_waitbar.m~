@@ -3,7 +3,7 @@ classdef my_waitbar
         idx = tic;
         waitbar_id = 0;
         
-        time_mask = '%3d.%s %% - %s [%%/s] [%s - %s]';
+        time_mask = '%s %% - %s [%%/s] [%s - %s]';
         msg = '';
         name = '';
         
@@ -118,63 +118,68 @@ classdef my_waitbar
             % Variable updates - Time, percentage, display current time, 
             % display end time, average speed
             obj.t_real = obj.t_real + dt;
-            
-            time_mask = 'HH:MM:SS';            
-            obj.t_curr_str = datestr(seconds(obj.t_real), time_mask);
-            
-            % Speed format
-            speed = obj.speed;
-            integer_part = floor(speed);
-            
-            SIG_NUMBERS = 1;
-            dec_n = (speed - integer_part)*10^SIG_NUMBERS;
-            
-            decimal_part = num2str(floor(dec_n));
-            integer_part = num2str(integer_part);
-
-            if(str2num(decimal_part) == 0)
-                decimal_part = extend_str('0', SIG_NUMBERS);
-            end
-            
-            speed_new = [integer_part, '.', decimal_part];
-            % ---------------
-            
-            % Percentage format
             perc = 100*t/tf;
             
             if(perc > 100)
                 perc = 100;
             end
-
+            
+            if(perc == 1)
+                obj.t_real = obj.t_prev;
+            end
+            obj.t_real
+            time_mask = 'HH:MM:SS';            
+            obj.t_curr_str = datestr(seconds(obj.t_real), time_mask);
             if((perc < eps))
                 t_f = 0;
                 obj.speed = 0;
+            
             else
                 obj.speed = perc/obj.t_real;
                 t_f = floor((100/obj.speed)*100)/100;
             end
-
+            
+            
             MOD_THRES = 5;
             perc = perc - mod(perc, MOD_THRES);
+
             perc = num2str(perc);            
             parts = strsplit(perc, '.');
             
-            part1_perc = str2num(parts{1});
             if(length(parts) == 1)
-                part2_perc = '00';
+                part2 = '00';
             else
-                part2_perc = parts{2};
-                part2_perc = terop(length(part2)==2, part2, [part2, '0']);
+                part2 = parts{2};
+                part2 = terop(length(part2)==2, part2, [part2, '0']);
             end
             
-            perc = [part1_perc, '.', part2_perc];
-            % ---------------
-
+            perc = [parts{1}, '.', part2];
+            
+            speed = obj.speed;
+            integer_part = floor(speed);
+            decimal_part = speed - floor(speed);
+%             [a, b] = dec2expnot(speed);
+            
+            if(length(parts) == 1)                
+                decimal_part = '00';
+            else
+                part2 = terop(length(decimal_part)==2, ...  decimal_part, [part2, '0']);
+                
+            end
+            
+            a = str2num([part1, '.', part2]);
+            
+            speed_new = num2str(a*10^b);
+            
+            
             obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');
-            obj.msg = sprintf(obj.time_mask, part1_perc, part2_perc, ...
-                              speed_new, obj.t_curr_str, obj.t_end_str);
-
-            obj.t_real_vec = [obj.t_real_vec, obj.t_real];
+            obj.msg = sprintf(obj.time_mask, perc, speed_new, ...
+                              obj.t_curr_str, obj.t_end_str);
+%             perc
+%             speed_new
+%             obj.t_curr_str
+%             obj.t_end_str
+% obj.t_real_vec = [obj.t_real_vec, obj.t_real];
             obj.speed_vec = [obj.speed_vec; obj.speed];
             obj.tf_real_vec = [obj.tf_real_vec, t_f];
             
