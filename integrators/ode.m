@@ -33,10 +33,9 @@ function [t, sol] = ode(degree, func, x0, tspan)
             Ks(:, j) = k_j;
         end
         
-        
         x = x_1 + dt*Ks*vec_x;
-        
         x_1 = x;
+        
         sol(:, end+1) = x;
 
         wb = wb.update_waitbar(t, tf);

@@ -4,6 +4,10 @@ function val = pwm_signal(t, max_val, min_val, alpha, T)
         t0 = 0;
     end
     
+    if(t == 0)
+        t0 = 0;
+    end
+
     if(t - t0 > T)
         t0 = t;
     end
