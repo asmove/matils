@@ -10,7 +10,7 @@ function [t, sol] = ode(degree, func, x0, tspan)
         error(msg);
     end
     
-    title = ['Solving EDO - Method ', num2str(degree)];
+    title = ['Solving EDO - RK', num2str(degree)];
     wb = my_waitbar(title);
     
     sol = x0;
@@ -39,7 +39,7 @@ function [t, sol] = ode(degree, func, x0, tspan)
         x_1 = x;
         sol(:, end+1) = x;
 
-        wb.update_waitbar(t, tf);
+        wb = wb.update_waitbar(t, tf);
     end
     
     wb.close_window();
