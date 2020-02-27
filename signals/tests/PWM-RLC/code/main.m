@@ -24,10 +24,17 @@ p12 = roots([1 R/L 1/(L*C)]);
 
 % System properties
 alpha = R/(2*L);
-w_d = sqrt(1/(L*C) - R^2/(4*L^2));
-xi = w_d/alpha;
-zeta = sqrt(1/(1 + xi^2));
-w_n = alpha/zeta;
+beta = 1/(L*C) - R^2/(4*L^2);
+
+if(beta > 0)
+    w_d = sqrt();
+    xi = w_d/alpha;
+    zeta = sqrt(1/(1 + xi^2));
+    w_n = alpha/zeta;
+else
+    w_n = 1/sqrt(L*C);
+    zeta = (R/2)*sqrt(C/L);
+end
 
 perc = 1/100;
 tr = -log(perc)/(zeta*w_n);
