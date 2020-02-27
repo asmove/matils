@@ -27,8 +27,9 @@ function [t, sol] = ode(degree, func, x0, tspan)
             c_j = vec_t(j);
             a_j = vec_k(j, :)';
             
-            
-            k_j = func(t + c_j*dt, x_1 + dt*Ks*a_j);
+            t_j = t + c_j*dt;
+            x_j = x_1 + dt*Ks*a_j;
+            k_j = func(t_j, x_j);
             
             Ks(:, j) = k_j;
         end

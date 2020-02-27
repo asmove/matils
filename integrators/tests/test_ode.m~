@@ -8,9 +8,10 @@ clear all;
 % Inputs and Declaration
 % solution stepsize and final time
 dt = 0.01;
-tf = 0.05;
+tf = 0.1;
 
-degrees = 1:12;
+degrees = 1:11;
+degrees
 % degrees = 2;
 
 % Function declaration
@@ -44,8 +45,7 @@ end
 errors = {errors(:, 1), errors(:, 2:end)};
 markers = {'-', '--', '.-', 's-', ...
            '*-', '-o', 'd-', 'p-', ...
-           '+-', '^-', 'v-', 'h-', ...
-           '>-', '<-'};
+           '+-', '^-', 'v-', 'h-', '>-'};
 
 markers_1 = markers(1:length(degrees)+1);
 legends = cellfun(@num2str, num2cell(degrees), 'UniformOutput', false);
@@ -66,7 +66,7 @@ markers_2 = {markers{2:length(degrees)+1}};
 
 plot_config.titles = {'Relative error'};
 plot_config.xlabels = {'t [s]'};
-plot_config.ylabels = {'$\log_{10}(|e(t)|_{\Infty})$'};
+plot_config.ylabels = {'$\log_{10}(|e(t)|)$'};
 plot_config.grid_size = [1, 1];
 plot_config.legends = legends;
 plot_config.pos_multiplots = ones(1, length(plot_config.legends)-1);

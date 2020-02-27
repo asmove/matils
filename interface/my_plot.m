@@ -179,11 +179,14 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     h = h + 1;
                     multiplot = false;
                 else
+                    markers_j = markers{j};
+                    legends_j = legends{j};
+                    
                     if(~isfield(plot_config, 'plot_type'))
-                        plot(t, head_x(:, idx), markers_f);
+                        plot(t, head_x(:, idx), markers_j);
                     else
                         plot_func = str2func(plot_config.plot_type);
-                        plot_func(t, head_x(:, idx), markers_f);
+                        plot_func(t, head_x(:, idx), markers_j);
                     end
                 end
             else
