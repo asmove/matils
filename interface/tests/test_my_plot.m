@@ -1,7 +1,7 @@
 x = (0:0.01:2*pi)';
 y_s = sin(x);
-y_e = exp(x);
 y_c = cos(x);
+y_e = exp(x);
 
 plot_config.titles = {'Harmonic', 'Exponential'};
 plot_config.xlabels = {'t [s]', 't [s]'};

@@ -1530,7 +1530,7 @@ function [vec_t, vec_k, vec_x] = butcher_matrix(degree)
                 error('Implementation from 1 to 12!');
         end
         
-        vec_t = vpa(vec_t);
-        vec_k = vpa(vec_k);
-        vec_x = vpa(vec_x);
+        vec_t = sym(vec_t); 
+        vec_k = sym(vec_k);
+        vec_x = sym(vec_x);
 end

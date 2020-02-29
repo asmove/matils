@@ -2,8 +2,6 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
     MAX_ROWS_DIV = 4;
     MAX_COLS_DIV = 4;
     
-    [m, n] = size(x);
-    
     hfigs = [];
     
     titles = plot_config.titles;
@@ -17,19 +15,16 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
     if(is_subplotable)
         legends = plot_config.legends;
         pos_multiplots = plot_config.pos_multiplots;
+                        
         markers = plot_config.markers;
         
         pos_uniques = unique(plot_config.pos_multiplots);
-        len_legends = length(pos_uniques);
         
         j = 1;
         for i = 1:length(pos_uniques)
             idx_uniques = find(pos_uniques(i) == pos_multiplots);            
             len_i_multiplots = length(idx_uniques);
-            
-            legends_j = legends{j};
-            markers_j = markers{j};
-            
+                        
             if(iscell(legends{j}))
                 len_legends = length(legends{j});
             else
@@ -140,12 +135,12 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     end
                     
                     markers_f = markers_j{f};
-                    legends_f = legends_j{f};
                     
                     head_x = double(head_x);
                     if(~isfield(plot_config, 'plot_type'))
                         plot(t, head_x(:, idx), markers_f);
                     else
+                        disp(':)');
                         plot_func = str2func(plot_config.plot_type);
                         plot_func(t, head_x(:, idx), markers_f);
                     end
@@ -155,9 +150,6 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     
                     for multiplot_idx = multiplot_idxs
                         markers_f = markers_j{f};
-                        legends_f = legends_j{f};
-                        
-                        tail_x(:, multiplot_idx)
                         
                         if(~isfield(plot_config, 'plot_type'))
                             plot(t, tail_x(:, multiplot_idx), markers_f);
@@ -171,7 +163,8 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                         f = f + 1;
                     end
                     
-                    legend(legends_j, 'interpreter', 'latex');
+                    legend(legends_j, ...
+                           'interpreter', 'latex', 'Location', 'best');
                     
                     hold off;
 
@@ -180,7 +173,6 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     multiplot = false;
                 else
                     markers_j = markers{j};
-                    legends_j = legends{j};
                     
                     if(~isfield(plot_config, 'plot_type'))
                         plot(t, head_x(:, idx), markers_j);

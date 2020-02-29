@@ -1,6 +1,9 @@
 function [t, sol] = ode(degree, func, x0, tspan)
     [vec_t, vec_k, vec_x] = butcher_matrix(degree);
     
+    PRECISION = 100;
+    digits(PRECISION);
+    
     len_t = length(vec_t);
     [len_row_k, len_col_k] = size(vec_k);
     
@@ -14,7 +17,7 @@ function [t, sol] = ode(degree, func, x0, tspan)
     wb = my_waitbar(title);
     
     sol = x0;
-    x_1 = x0;
+    x_1 = sym(x0);
     
     dt = tspan(2) - tspan(1);
     tf = tspan(end);
@@ -34,13 +37,16 @@ function [t, sol] = ode(degree, func, x0, tspan)
             Ks(:, j) = k_j;
         end
         
-        x = x_1 + dt*Ks*vec_x;
-        x_1 = x;
+        x = vpa(x_1) + ...
+            dt*sym(Ks)*sym(vec_x);
+        x_1 = sym(x);
         
         sol(:, end+1) = x;
 
         wb = wb.update_waitbar(t, tf);
     end
+    
+    sol = sym(sol);
     
     wb.close_window();
 end
