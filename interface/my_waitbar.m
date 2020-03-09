@@ -1,11 +1,13 @@
 classdef my_waitbar
     properties
         idx = tic;
-        waitbar_id = 0;
         
+        % Mask for message ovre progress bar
         time_mask = '%3d.%s %% - %s [%%/s] [%s - %s]';
-        msg = '';
+        
+        % mwssage on title
         name = '';
+        msg = '';
         
         % Simulation time
         t_sim = 0;
@@ -21,7 +23,8 @@ classdef my_waitbar
         % Real time
         tf = 0;
         tf_real_vec = [];
-                
+        
+        % Speed(s) of percentage per time
         speed = 0;
         speed_vec = [];
          
@@ -52,13 +55,9 @@ classdef my_waitbar
         function obj = my_waitbar(name)
             obj.name = name;
             
-            persistent n_waitbars;
-            if(isempty(n_waitbars))
-                n_waitbars = 0;
+            if(nargin == 1)
+                msg = 'teste1 \n teste2';
             end
-
-            n_waitbars = n_waitbars + 1;
-            obj.waitbar_id = n_waitbars;
             
             obj.t_curr_str = datestr(seconds(0), 'HH:MM:SS');
             obj.t_end_str = datestr(seconds(0), 'HH:MM:SS');
@@ -73,7 +72,34 @@ classdef my_waitbar
             wb_texts = findall(obj.wb, 'type', 'text');
             set(wb_texts, 'Interpreter', 'none');
             
+%             hChildren = get(obj.wb, 'Children');
+%             for k = 1:length(hChildren)
+%                 hChild = hChildren(k);
+%                 if isfield(get(hChild), 'Style')  && ...
+%                    strcmpi(get(hChild,'Style'),'pushbutton')
+%                    
+%                    hChildPos = get(hChild,'Position');                   
+%                    staticTextPos = hChildPos;
+%                    
+%                    staticTextPos(1) = 10;
+%                    staticTextPos(2) = staticTextPos(2) - 20;
+%                    
+%                    hPauseBtn = uicontrol(obj.wb, ...
+%                                          'Style', 'text', ...
+%                                          'String', msg,...
+%                                          'Position', staticTextPos);    
+%                 end
+%             end
+            
             obj.previous_t = tic;
+        end
+        
+        function pauseButtonCallback(hSource, eventdata)
+            pauseWaitbar = ~pauseWaitbar;
+        end
+        
+        function cancelButtonCallback(hSource, eventdata)
+            cancelWaitbar = 1;
         end
         
         function h = find_handle(obj)
@@ -108,7 +134,7 @@ classdef my_waitbar
         end
                 
         function obj = update_waitbar(obj, t, tf)
-            dt = toc(obj.previous_t);
+            dt = toc(uint64(obj.previous_t));
             obj.previous_t = tic;
             obj.t_prev = obj.t_real;
 
@@ -178,7 +204,16 @@ classdef my_waitbar
             obj.speed_vec = [obj.speed_vec; obj.speed];
             obj.tf_real_vec = [obj.tf_real_vec, t_f];
             
-            waitbar(t/tf, obj.wb, obj.msg);
+            if(isvalid(obj.wb))
+               waitbar(t/tf, obj.wb, obj.msg); 
+            else
+                warning('Invalid UI Figure. Continue instead.');
+            end
+            
+            EPS = 1e-2;
+            if(t/tf > 1 - EPS)
+                obj.close_window();
+            end
         end
         
         function close_window(obj)

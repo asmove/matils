@@ -12,6 +12,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
     
     % Find out subplot properties and evoke error or warning when necessary
     is_subplotable = iscell(x);
+    
     if(is_subplotable)
         legends = plot_config.legends;
         pos_multiplots = plot_config.pos_multiplots;
@@ -30,13 +31,12 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
             else
                 len_legends = length(legends);
             end
-            
             if(iscell(markers{j}))
                 len_markers = length(markers{j});
             else
                 len_markers = length(markers);
             end
-                        
+            
             if(len_i_multiplots + 1 ~= len_legends)
                 regex_msg = 'Legends pos %d: Repeated ids : %d; Len legends: %d';
                 msg = sprintf(regex_msg, i, len_i_multiplots + 1, ...
@@ -126,6 +126,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                 is_multiplot = ~isempty(multiplot_idxs);
                 
                 if(is_multiplot)
+                    
                     if(iscell(legends{j}))
                         legends_j = legends{h};
                         markers_j = markers{h};
@@ -140,7 +141,6 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     if(~isfield(plot_config, 'plot_type'))
                         plot(t, head_x(:, idx), markers_f);
                     else
-                        disp(':)');
                         plot_func = str2func(plot_config.plot_type);
                         plot_func(t, head_x(:, idx), markers_f);
                     end
@@ -241,11 +241,16 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                 id_plot = [7, 8];
             end
 
-            axis_ik = subplot(new_ncols, new_nrows, id_plot);
-            
+            axis_ik = subplot(new_ncols, new_nrows, id_plot);            
             axis_k{end+1} = axis_ik;
             
-            plot(t, xs(:, k));
+            xs_k = xs(:, k);
+            
+            if(iscell(xs_k))
+                xs_k = xs_k{1};
+            end
+            
+            plot(t, xs_k);
 
             title(titles{k+i-1}, 'interpreter', 'latex');
             xlabel(xlabels{k+i-1}, 'interpreter', 'latex');
