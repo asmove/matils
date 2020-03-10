@@ -132,7 +132,11 @@ classdef my_waitbar
                 error('There is more than a handle with prescripted ID.');
             end
         end
-                
+        
+        function obj = change_title(obj, name)
+            obj.wb.Name = name;
+        end
+        
         function obj = update_waitbar(obj, t, tf)
             dt = toc(uint64(obj.previous_t));
             obj.previous_t = tic;
@@ -210,7 +214,7 @@ classdef my_waitbar
                 warning('Invalid UI Figure. Continue instead.');
             end
             
-            EPS = 1e-2;
+            EPS = 1e-5;
             if(t/tf > 1 - EPS)
                 obj.close_window();
             end
