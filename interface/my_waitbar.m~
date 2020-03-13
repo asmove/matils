@@ -68,14 +68,21 @@ classdef my_waitbar
                               obj.t_curr_str, obj.t_end_str);
             
             cancel_callback = 'setappdata(gcbf,''canceling'',1)';
-            obj.wb = waitbar(0, obj.msg,  'Name', obj.name, ... 
+            obj.wb = waitbar(0, obj.msg,  ...
+                             'Name', obj.name, ... 
                              'CreateCancelBtn', cancel_callback);
             
-            [width, height] = screensize(end-1, end);
+            screensize = get(0,'ScreenSize');
+
+            width = screensize(3);            [width, height] = screensize(3:4);
+            height = screensize(4);
+            
             l_pos = uniform(0, width);
             b_pos = uniform(0, height);
             
-            obj.wb.Position = [l_pos, b_pos, .];
+            obj.wb.Position = [l_pos, b_pos, ...
+                               obj.wb.Position(3), ...
+                               obj.wb.Position(4)];
             
             wb_texts = findall(obj.wb, 'type', 'text');
             set(wb_texts, 'Interpreter', 'none');
