@@ -1,4 +1,52 @@
-function [t, sol] = ode(degree, func, x0, tspan)
+function [tspan_, sol] = ode(method, func, x0, tspan, options)
+    
+    if(strcmp(method, 'rk'))
+        [tspan_, sol] = rk_ode(func, x0, tspan, options.degree);
+    elseif(strcmp(method, 'imp-euler'))
+        [tspan_, sol] =  rk_impeuler(func, x0, tspan, options.precision);
+    else
+        error(strcat('Methods implemented: ', ...
+                     char(39), 'rk', char(39), ' and  ', ...
+                     char(39), 'imp-euler', char(39)));
+    end
+    
+end
+
+function [tspan, sol] =  rk_impeuler(func, x0, tspan, precision)
+    
+    % XXX: Fix
+    error('Deprecated! Simulation time is to long.');
+    
+    len_t = length(tspan);
+    
+    wb = my_waitbar('Solving EDO - Implicit Euler');
+    
+    sol = x0;
+    x_1 = x0;
+    
+    dt = tspan(2) - tspan(1);
+    tf = tspan(end);
+    
+    n_t = length(tspan);
+    
+    for i = 2:n_t
+        t_i = tspan(i);
+        
+        x_1 = sol(:, i-1);
+        options = optimset('Display', 'iter', 'PlotFcns', @plot_objective);
+        
+        opt_func = @(x) norm(x - x_1 - dt*func(t_i + dt, x));        
+        x = fminsearch(opt_func, x0);
+        
+        sol = [sol, x];
+        
+        wb.update_waitbar(i, n_t);
+    end
+    
+    wb.close_window();
+end
+
+function [tspan, sol] = rk_ode(func, x0, tspan, degree)
     [vec_t, vec_k, vec_x] = butcher_matrix(degree);
     
     PRECISION = 100;

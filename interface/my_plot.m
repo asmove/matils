@@ -81,6 +81,13 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
         [~, n] = size(x);
     end
     
+    if(nrows*ncols > n)
+        msg = ['There are ', num2str(nrows*ncols), ...
+              ' slots and ', num2str(n), ...
+              ' data columns. Check it out!'];
+        error(msg);
+    end
+    
     n_subplots = nrows*ncols;
     remaind_n = rem(n, n_subplots);
     n_windows = (n - remaind_n)/n_subplots;
@@ -154,6 +161,8 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                         if(~isfield(plot_config, 'plot_type'))
                             plot(t, tail_x(:, multiplot_idx), markers_f);
                         else
+                            size(tail_x(:, multiplot_idx))
+                            size(t)
                             plot_func = str2func(plot_config.plot_type);
                             plot_func(t, tail_x(:, multiplot_idx), ...
                                       markers_f);
@@ -164,7 +173,8 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     end
                     
                     legend(legends_j, ...
-                           'interpreter', 'latex', 'Location', 'best');
+                           'interpreter', 'latex', ...
+                           'Location', 'best');
                     
                     hold off;
 
@@ -172,13 +182,11 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     h = h + 1;
                     multiplot = false;
                 else
-                    markers_j = markers{j};
-                    
                     if(~isfield(plot_config, 'plot_type'))
-                        plot(t, head_x(:, idx), markers_j);
+                        plot(t, head_x(:, idx));
                     else
                         plot_func = str2func(plot_config.plot_type);
-                        plot_func(t, head_x(:, idx), markers_j);
+                        plot_func(t, head_x(:, idx));
                     end
                 end
             else
@@ -243,7 +251,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
 
             axis_ik = subplot(new_ncols, new_nrows, id_plot);            
             axis_k{end+1} = axis_ik;
-            
+            k
             xs_k = xs(:, k);
             
             if(iscell(xs_k))

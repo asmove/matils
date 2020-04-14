@@ -55,10 +55,6 @@ classdef my_waitbar
         function obj = my_waitbar(name)
             obj.name = name;
             
-            if(nargin == 1)
-                msg = 'teste1 \n teste2';
-            end
-            
             obj.t_curr_str = datestr(seconds(0), 'HH:MM:SS');
             obj.t_end_str = datestr(seconds(0), 'HH:MM:SS');
             
@@ -156,7 +152,7 @@ classdef my_waitbar
             speed = obj.speed;
             integer_part = floor(speed);
             
-            SIG_NUMBERS = 1;
+            SIG_NUMBERS = 3;
             dec_n = (speed - integer_part)*10^SIG_NUMBERS;
             
             decimal_part = num2str(floor(dec_n));

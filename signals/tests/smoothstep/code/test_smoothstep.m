@@ -19,9 +19,14 @@ end
 
 ys = zeros(length(time), length(degrees));
 
+wb = my_waitbar('Trajectory generation');
+
 for j = 1:length(degrees)
     for i = 1:length(time)
         ys(i, j) = smoothstep(time(i), t_mid, y_begin, y_end, degrees{j});
+        
+        wb.update_waitbar((j - 1)*length(time) + i, ...
+                          length(time)*length(degrees));
     end
 end
 
