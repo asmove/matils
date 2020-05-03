@@ -74,6 +74,15 @@ for i = 1:length(t)
     dP_ts = [dP_ts; dP_t];
 end
 
+plot_config.titles = repeat_str('', 4);
+plot_config.xlabels = {'', '', '', 'Iterations'};
+plot_config.ylabels = {'$x(t)$', '$y(t)$', ...
+                       '$\dot{x}(t)$', '$\dot{y}(t)$'};
+plot_config.grid_size = [2, 2];
+
+bezier_points = [P_ts, dP_ts];
+[hfigs_bezier, axs] = my_plot(t, bezier_points, plot_config);
+
 hfig_dbezier = my_figure();
 
 % Bezier
@@ -106,7 +115,60 @@ aux_leg = legend({msg}, ...
                   'interpreter', 'latex', ...
                   'Fontsize', 12, ...
                   'Location', 'northwest');
-    
+
+P_ts_int = P_ts(1, :);
+for i = 2:length(t)-1
+    P_ts_int = [P_ts_int; P_ts_int(i - 1, :) + dt*(dP_ts(i, :) + dP_ts(i+1, :))/2];
+end
+
+% Bezier integration
+hfig_bezier_int = my_figure();
+
+hP = plot(P_ts_int(:, 1), P_ts_int(:, 2), 'k-');
+
+hold on
+plot(P_ts_int(1, 1), P_ts_int(1, 2), '-p', ...
+    'MarkerFaceColor','red',...
+    'MarkerSize',15);
+
+hold on
+plot(P_ts_int(end, 1), P_ts_int(end, 2), ...
+    '-s','MarkerSize', 10,...
+    'MarkerEdgeColor', 'red',...
+    'MarkerFaceColor', [1 .6 .6]);
+
+hold on
+hP_ts = plot(P_ts(:, 1), P_ts(:, 2), 'r-');
+
+hold on
+plot(P_ts(1, 1), P_ts(1, 2), '-p', ...
+    'MarkerFaceColor','red',...
+    'MarkerSize',15);
+
+hold on
+plot(P_ts(end, 1), P_ts(end, 2), ...
+    '-s','MarkerSize',10,...
+    'MarkerEdgeColor','red',...
+    'MarkerFaceColor',[1 .6 .6]);
+
+hold off
+
+axis square
+
+title('Trajectories from A to B', ...
+      'interpreter', 'latex', ...
+      'Fontsize', 12);
+xlabel('x');
+ylabel('y');
+
+deriv_msg = sprintf('{d^{(%d)}}{dt^{(%d)}}', nd_degree, nd_degree);
+msg = ['$\int^{1}_{0} \, \frac', deriv_msg, ' P(t) \, dt$'];
+
+aux_leg = legend([hP, hP_ts] , {'$P(t)$', msg}, ... 
+                  'interpreter', 'latex', ...
+                  'Fontsize', 12, ...
+                  'Location', 'northwest');
+
 % Save folder
 path = [pwd '/../imgs/'];
 posfix = [];
@@ -116,5 +178,7 @@ saveas(hfig_bezier, [path, fname], 'epsc')
 
 fname = 'dbezier';
 saveas(hfig_dbezier, [path, fname], 'epsc')
-    
+
+fname = 'bezier_int';
+saveas(hfig_bezier_int, [path, fname], 'epsc')
 

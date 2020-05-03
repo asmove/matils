@@ -42,8 +42,6 @@ function [tspan, sol] =  rk_impeuler(func, x0, tspan, precision)
         
         wb.update_waitbar(i, n_t);
     end
-    
-    wb.close_window();
 end
 
 function [tspan, sol] = rk_ode(func, x0, tspan, degree)
@@ -79,14 +77,17 @@ function [tspan, sol] = rk_ode(func, x0, tspan, degree)
             a_j = vec_k(j, :)';
             
             t_j = t + c_j*dt;
+            
             x_j = x_1 + dt*Ks*a_j;
+            
             k_j = func(t_j, x_j);
             
             Ks(:, j) = k_j;
+            
         end
         
-        x = vpa(x_1) + ...
-            dt*sym(Ks)*sym(vec_x);
+        
+        x = vpa(x_1) + dt*sym(Ks)*sym(vec_x);
         x_1 = sym(x);
         
         sol(:, end+1) = x;
@@ -95,6 +96,4 @@ function [tspan, sol] = rk_ode(func, x0, tspan, degree)
     end
     
     sol = sym(sol);
-    
-    wb.close_window();
 end

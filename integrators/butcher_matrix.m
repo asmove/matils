@@ -1,5 +1,5 @@
 function [vec_t, vec_k, vec_x] = butcher_matrix(degree)
-
+        
         vec_t = zeros(degree, 1);
         vec_k = zeros(degree, degree);
         vex_x = zeros(degree, 1);

@@ -67,20 +67,59 @@ classdef my_waitbar
                              'CreateCancelBtn', cancel_callback);
             
             screensize = get(0,'ScreenSize');
-
             width = screensize(3);
             height = screensize(4);
-            
             l_pos = uniform(0, width);
             b_pos = uniform(0, height);
-            
             obj.wb.Position = [l_pos, b_pos, ...
                                obj.wb.Position(3), ...
                                obj.wb.Position(4)];
-            
             wb_texts = findall(obj.wb, 'type', 'text');
-            set(wb_texts, 'Interpreter', 'none');
+            set(wb_texts, 'Interpreter', 'latex');
             
+%             winwidth = 300;           % Width of timebar window
+%             winheight = 85;           % Height of timebar window
+%             
+%             % 2.2 - Define the message textbox
+%             userdata.text(1) = uicontrol(obj.wb,'style','text','hor','left',...     
+%                                          'pos',[10 winheight-30 winwidth-20 20], 'string',message,...                                            
+%                                          'backgroundcolor',wincolor,'tag','message');
+%             
+%             % 2.3 - Build estimated remaining static text textbox
+%             est_text = 'Estimated time remaining: ';
+%             userdata.text(2) = uicontrol(obj.wb,'style','text','string',est_text,...       
+%                 'pos',[10 15 winwidth/2 20],'FontSize',7,...
+%                 'backgroundcolor',wincolor,'HorizontalAlignment','right');
+%             
+%             % 2.4 - Build estimated time textbox
+%             userdata.remain = uicontrol(obj.wb,'style','text','string','',...
+%                 'FontSize',7,'HorizontalAlignment','left',...
+%                 'pos',[winwidth/2+10 14.5 winwidth-25 20], ...
+%                 'backgroundcolor',wincolor);
+% 
+%             % 2.5 - Build elapsed static text textbox
+%             est_text = 'Total elapsed time: ';
+%             userdata.text(3) = uicontrol(obj.wb,'style','text','string',est_text,...       
+%                 'pos',[10 3 winwidth/2 20],'FontSize',7,...
+%                 'backgroundcolor',wincolor,'HorizontalAlignment','right');                                
+%             
+%             % 2.6 - Build elapsed time textbox
+%             userdata.elapse = uicontrol(obj.wb,'style','text','string','',...   
+%                 'pos',[winwidth/2+10 3.5 winwidth-25 20],'FontSize',7, ...                                  
+%                 'backgroundcolor',wincolor,'HorizontalAlignment','left');     
+% 
+%             
+%             % 2.7 - Build percent progress textbox
+%             userdata.percent = uicontrol(obj.wb,'style','text','hor','right',...     
+%                 'pos',[winwidth-35 winheight-52 28 20],'string','',...                                       
+%                 'backgroundcolor',wincolor);
+% 
+%             % 2.8 - Build progress bar axis
+%             userdata.axes = axes('parent',h,'units','pixels','xlim',[0 1],...                                
+%                 'pos',[10 winheight-45 winwidth-50 15],'box','on',...                                     
+%                 'color',[1 1 1],'xtick',[],'ytick',[]);
+            
+%             % TO FIX: Insert pause button
 %             hChildren = get(obj.wb, 'Children');
 %             for k = 1:length(hChildren)
 %                 hChild = hChildren(k);
@@ -158,60 +197,88 @@ classdef my_waitbar
             % display end time, average speed
             obj.t_real = obj.t_real + dt;
             
-            time_mask = 'HH:MM:SS';            
-            obj.t_curr_str = datestr(seconds(obj.t_real), time_mask);
-            
-            % Speed format
-            speed = obj.speed;
-            integer_part = floor(speed);
-            
-            SIG_NUMBERS = 3;
-            dec_n = (speed - integer_part)*10^SIG_NUMBERS;
-            
-            decimal_part = num2str(floor(dec_n));
-            integer_part = num2str(integer_part);
-
-            if(str2num(decimal_part) == 0)
-                decimal_part = extend_str('0', SIG_NUMBERS);
-            end
-            
-            speed_new = [integer_part, '.', decimal_part];
-            % ---------------
+            hour_mask = 'HH:MM:SS';            
+            obj.t_curr_str = datestr(seconds(obj.t_real), hour_mask);
             
             % Percentage format
-            perc = 100*t/tf;
+            perc_num = 100*t/tf;
             
-            if(perc > 100)
-                perc = 100;
+            if(perc_num > 100)
+                perc_num = 100;
             end
-
-            if((perc < eps))
-                t_f = 0;
-                obj.speed = 0;
-            else
-                obj.speed = perc/obj.t_real;
-                t_f = floor((100/obj.speed)*100)/100;
-            end
-
+            
+            % NOTE: Decompose the percentage into blocks of 
+            % MOD_THRES sizes to improve readability
             MOD_THRES = 5;
-            perc = perc - mod(perc, MOD_THRES);
-            perc = num2str(perc);            
-            parts = strsplit(perc, '.');
+            
+            perc_trunc = perc_num - mod(perc_num, MOD_THRES);
+            perc_str = num2str(perc_trunc);
+            parts = strsplit(perc_str, '.');
             
             part1_perc = str2num(parts{1});
             if(length(parts) == 1)
                 part2_perc = '00';
             else
                 part2_perc = parts{2};
-                part2_perc = terop(length(part2)==2, part2, [part2, '0']);
+                part2_perc = terop(length(part2_perc)==2, ...
+                                          part2_perc, ...
+                                          [part2_perc, '0']);
             end
             
             perc = [part1_perc, '.', part2_perc];
             % ---------------
 
-            obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');
+            SIG_NUMBERS = 3;
+            
+            if((perc_num < eps))
+                obj.speed = 0;
+            else
+                obj.speed = perc_num/obj.t_real;
+            end
+            
+            % Speed format
+            speed_f = obj.speed;
+            
+            if(speed_f*10^SIG_NUMBERS > 1)
+                speed_i = floor(speed_f);
+
+                speed_dec_str = num2str(floor((speed_f - speed_i)*10^SIG_NUMBERS));
+                speed_int_str = num2str(speed_i);
+
+                if(str2num(speed_dec_str) == 0)
+                    decimal_part = extend_str('0', SIG_NUMBERS);
+                end
+                
+                while(length(speed_dec_str) ~= SIG_NUMBERS)
+                    speed_dec_str = [speed_dec_str, '0'];
+                end
+                    
+                speed_str = [speed_int_str, '.', speed_dec_str];
+            
+            
+            else
+                [speed_int, speed_dec] = dec2expnot(speed_f);
+                speed_str = [num2str(speed_int), 'e', num2str(speed_dec)];
+            end
+            % ---------------
+            
+            % Final time
+            if(perc < eps)
+                t_f = 0;
+                obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');
+            else
+                t_f = floor((100/obj.speed)*100)/100;
+                if(isinf(t_f))
+                    obj.t_end_str = 'Undefined';
+                else
+                    obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');
+                end
+            end
+            
+            % ---------------
+            
             obj.msg = sprintf(obj.time_mask, part1_perc, part2_perc, ...
-                              speed_new, obj.t_curr_str, obj.t_end_str);
+                              speed_str, obj.t_curr_str, obj.t_end_str);
 
             obj.t_real_vec = [obj.t_real_vec, obj.t_real];
             obj.speed_vec = [obj.speed_vec; obj.speed];
@@ -221,11 +288,6 @@ classdef my_waitbar
                waitbar(t/tf, obj.wb, obj.msg); 
             else
                 warning('Invalid UI Figure. Continue instead.');
-            end
-            
-            EPS = 1e-5;
-            if(t/tf > 1 - EPS)
-                obj.close_window();
             end
         end
         

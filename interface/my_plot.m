@@ -93,7 +93,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
     n_windows = (n - remaind_n)/n_subplots;
     
     h_legends = {};
-
+    
     % Current position on markers and legends blobs
     f = 1;
     
@@ -161,8 +161,6 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                         if(~isfield(plot_config, 'plot_type'))
                             plot(t, tail_x(:, multiplot_idx), markers_f);
                         else
-                            size(tail_x(:, multiplot_idx))
-                            size(t)
                             plot_func = str2func(plot_config.plot_type);
                             plot_func(t, tail_x(:, multiplot_idx), ...
                                       markers_f);
@@ -170,6 +168,10 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                         
                         hold on;
                         f = f + 1;
+                    end
+                    
+                    if(isfield(plot_config, 'axis_style'))
+                        axis(plot_config.axis_style)
                     end
                     
                     legend(legends_j, ...
@@ -188,6 +190,10 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                         plot_func = str2func(plot_config.plot_type);
                         plot_func(t, head_x(:, idx));
                     end
+                    
+                    if(isfield(plot_config, 'axis_style'))
+                        axis(plot_config.axis_style)
+                    end
                 end
             else
                 if(~isfield(plot_config, 'plot_type'))
@@ -195,6 +201,10 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                 else
                     plot_func = str2func(plot_config.plot_type);
                     plot_func(t, head_x(:, idx));
+                end
+                
+                if(isfield(plot_config, 'axis_style'))
+                    axis(plot_config.axis_style)
                 end
             end
             
@@ -209,7 +219,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
         hfigs = [hfigs; hfig];
         i = i + 1;
     end
-
+    
     % Unelegant but efficient way to divide the plot window
     % Hypothesis: Maximum of 12 windows
     if(mod(remaind_n, 3) == 0)
@@ -251,7 +261,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
 
             axis_ik = subplot(new_ncols, new_nrows, id_plot);            
             axis_k{end+1} = axis_ik;
-            k
+            
             xs_k = xs(:, k);
             
             if(iscell(xs_k))
@@ -259,6 +269,10 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
             end
             
             plot(t, xs_k);
+            
+            if(isfield(plot_config, 'axis_style'))
+                axis(plot_config.axis_style)
+            end
 
             title(titles{k+i-1}, 'interpreter', 'latex');
             xlabel(xlabels{k+i-1}, 'interpreter', 'latex');

@@ -1,3 +1,28 @@
+% function Pijk = nd_Pij_t(t, k, Ps)
+%     Pijk = sym_nd_Pij_t(k, Ps);
+% 
+%     syms time;
+%     
+%     Pijk = subs(Pijk, time, t);
+% end
+% 
+% function dPijk = sym_nd_Pij_t(k, Ps)
+%     syms time;
+%     
+%     n = length(Ps);
+%     
+%     Pij = sym(0);
+%     for i = 1:n
+%         combni = factorial(n)/(factorial(i)*factorial(n - i));
+%         Pij = Pij + combni*(time^i)*(1 - time)^(n - i)*Ps{i};
+%     end
+%         
+%     dPijk = Pij;
+%     for i = 1:k
+%         dPijk = diff(dPijk, time);
+%     end
+% end
+
 function Pijk = nd_Pij_t(t, i, j, k, Ps)
     if(k == 0)
         Pijk = Pij_t(t, i, j, Ps);

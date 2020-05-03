@@ -3,113 +3,131 @@ close all
 clc
 
 % Percentage of segment between A and B
-alpha_0 = 0.5;
-alpha_1 = 0.45;
+alpha_0 = 0.4;
+alpha_1 = 0.3;
 
-if((alpha_1 > 0) && (alpha_0 > 0) && ...
-   (alpha_0 + alpha_1 > 1))
-    error('Alpha_1 and Alpha_2 must sum 1 and be greater than 0');
-end
-
+% Begin and end points
 A = [0; 0];
-B = [1; 1];
+B = [2; 1];
+theta_0 = pi/3;
 
+% Velocities on respective paths
 v_0 = 0.5;
+v_01 = 1;
 v_1 = 0.5;
 
-theta_0 = 0;
-theta_1 = pi/4;
+paths = traj_tangentAB(A, B, theta_0, v_0, v_01, v_1, ...
+                       alpha_0, alpha_1);
 
-t_0 = tan(theta_0);
-t_1 = tan(theta_1);
+n_p = 1;
+for i = 1:length(paths)
+    path = paths{i};
+    if(~isempty(path.trajectory))
+        hfig = my_figure();
+        set(groot,'defaulttextinterpreter','latex');  
+        set(groot, 'defaultAxesTickLabelInterpreter','latex');  
+        set(groot, 'defaultLegendInterpreter','latex');
 
-signs = [-1, 1];
+        path = paths{i};
 
-s_phi_0 = -sqrt(t_0^2/(1 + t_0^2));
-c_phi_0 = sqrt(1/(1 + t_0^2));
+        A = path.A;
 
-phi_0 = atan2(c_phi_0, s_phi_0);
+        C_0 = path.C_0;
+        C_1 = path.C_1;
 
-s_phi_1 = -sqrt(t_1^2/(1 + t_1^2));
-c_phi_1 = sqrt(1/(1 + t_1^2));
+        D_0 = path.D_0;
+        D_1 = path.D_1;
 
-phi_1 = atan2(c_phi_1, s_phi_1);
+        circA = path.circA;
+        circB = path.circB;
+        
+        line0 = path.line0;
+        line1 = path.line1;
 
-% Distance between path points
-dAB = norm(A - B);
+        phi_0 = path.phi_0;
+        phi_1 = path.phi_1;
 
-% Circle radius
-r0 = alpha_0*dAB/2;
-r1 = alpha_1*dAB/2;
+        center_0 = path.center_0;
+        center_1 = path.center_1;
 
-% Angular velocity through path
-omega_0 = v_0/r0;
-omega_1 = v_1/r1;
+        plot(A(1), A(2), 'k*');
+        hold on;
+        plot(B(1), B(2), 'k*');
+        hold on;
 
-% Centers of circles
-rhat0 = [cos(phi_0); sin(phi_0)];
-rhat0_perp = [-sin(phi_0); cos(phi_0)];
-center_A = A - r0*rhat0;
+        if(~(isempty(path.trajectory)))
+            trajectory = path.trajectory;
+            
+            path0 = trajectory{1};
+            plot(path0(:, 1), path0(:, 2))
+            
+            path01 = trajectory{2};
+            plot(path01(:, 1), path01(:, 2))
+            
+            path1 = trajectory{3};
+            plot(path1(:, 1), path1(:, 2))
+            
+            n_p = n_p + 1;
+        end
 
-rhat1 = [cos(phi_1); sin(phi_1)];
-rhat1_perp = [-sin(phi_1); cos(phi_1)];
-center_B = B + r1*rhat1;
+        plot(line0(:, 1), line0(:, 2), 'b--');
+        hold on;
+        plot(line1(:, 1), line1(:, 2), 'b--');
+        hold on;
 
-[B_0, B_1, C_0, C_1, ...
- x, line0, line1] = inner_tangentAB(center_A, center_B, r0, r1);
+        plot(circA(:, 1), circA(:, 2), 'r--');
+        hold on;
+        plot(circB(:, 1), circB(:, 2), 'r--');
+        hold on;
+        
+        plot(center_0(1), center_0(2), 'kx');
+        hold on;
+        plot(center_1(1), center_1(2), 'kx');
+        hold on;
 
-dtheta = 0.01;
-thetas = 0:dtheta:2*pi;
+        plot(path.dest_0(1), path.dest_0(2), 'ks');
+        text(path.dest_0(1), path.dest_0(2), ...
+             '$\leftarrow \, C$', 'FontSize', 15);
+        hold on;
 
-circA = [];
-circB = [];
-for theta = thetas
-    circA = [circA; r0*[cos(theta); sin(theta)]' + center_A'];
-    circB = [circB; r1*[cos(theta); sin(theta)]' + center_B'];
+        plot(path.orig_1(1), path.orig_1(2), 'ks');
+        text(path.orig_1(1), path.orig_1(2), ...
+             '$\leftarrow \, D$', 'FontSize', 15);
+        hold on;
+
+        text(A(1), A(2), ...
+             '$\leftarrow A$', 'FontSize', 15);
+
+        text(B(1), B(2), ...
+             '$\leftarrow B$', 'FontSize', 15);
+
+        text(center_0(1), center_0(2), ...
+             '$\leftarrow O_0$', 'FontSize', 15);
+
+        text(center_1(1), center_1(2), ...
+             '$\leftarrow O_1$', 'FontSize', 15);
+
+        hold off;
+
+        axis equal
+        axis tight
+
+        % Speeds plot
+        filepath = ['../imgs/circle_line_', num2str(i), '.eps'];
+        saveas(hfig, filepath, 'epsc');
+        end
 end
 
-hfig = my_figure();
+plot_config.titles = repeat_str('', 2);
+plot_config.xlabels = {'', 'Iterations'};
+plot_config.ylabels = {'$x(t)$', '$y(t)$'};
+plot_config.grid_size = [1, 2];
+path = paths{1};
 
-plot(A(1), A(2), 'k*');
-msg = '\leftarrow A';
-text(A(1), A(2), msg);
-hold on;
-plot(B(1), B(2), 'k*');
-msg = '\leftarrow B';
-text(B(1), B(2), msg);
-hold on;
+t = [path.t_traj{1}'; path.t_traj{2}'; path.t_traj{3}'];
+traj = [path.trajectory{1}; path.trajectory{2}; path.trajectory{3}];
 
-plot(line0(:, 1), line0(:, 2), 'b');
-hold on;
-plot(line1(:, 1), line1(:, 2), 'b');
-hold on;
-
-plot(circA(:, 1), circA(:, 2), 'r');
-hold on;
-plot(circB(:, 1), circB(:, 2), 'r');
-hold on;
-
-plot(center_A(1), center_A(2), 'kx');
-hold on;
-plot(center_B(1), center_B(2), 'kx');
-hold on;
-
-plot(C_0(1), C_0(2), 'ko');
-hold on;
-plot(C_1(1), C_1(2), 'ko');
-hold on;
-plot(B_0(1), B_0(2), 'ko');
-hold on;
-plot(B_1(1), B_1(2), 'ko');
-hold on;
-quiver(A(1), A(2), rhat0_perp(1), rhat0_perp(2));
-hold on;
-quiver(B(1), B(2), rhat1_perp(1), rhat1_perp(2));
-hold off;
-
-axis equal;
-
-
-
-
+[hfigs_traj, axs] = my_plot(t, traj, plot_config);
+axis(axs{1}{1}, 'square');
+axis(axs{1}{2}, 'square');
 

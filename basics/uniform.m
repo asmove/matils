@@ -1,7 +1,7 @@
 function z = uniform(a, b, dim)
     if(nargin == 2)
         dim = 1;
-        n = 1
+        n = 1;
     else
         n = prod(dim);
         z = zeros(n, 1);
