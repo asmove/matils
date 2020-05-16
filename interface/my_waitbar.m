@@ -5,7 +5,7 @@ classdef my_waitbar
         % Mask for message ovre progress bar
         time_mask = '%3d.%s %% - %s [%%/s] [%s - %s]';
         
-        % mwssage on title
+        % Message on title
         name = '';
         msg = '';
         
@@ -74,9 +74,8 @@ classdef my_waitbar
             obj.wb.Position = [l_pos, b_pos, ...
                                obj.wb.Position(3), ...
                                obj.wb.Position(4)];
-            wb_texts = findall(obj.wb, 'type', 'text');
-            set(wb_texts, 'Interpreter', 'latex');
-            
+%             wb_texts = findall(obj.wb, 'type', 'text');
+%             set(wb_texts, 'Interpreter', 'latex');
 %             winwidth = 300;           % Width of timebar window
 %             winheight = 85;           % Height of timebar window
 %             
@@ -285,7 +284,7 @@ classdef my_waitbar
             obj.tf_real_vec = [obj.tf_real_vec, t_f];
             
             if(isvalid(obj.wb))
-               waitbar(t/tf, obj.wb, obj.msg); 
+                waitbar(t/tf, obj.wb, obj.msg); 
             else
                 warning('Invalid UI Figure. Continue instead.');
             end
