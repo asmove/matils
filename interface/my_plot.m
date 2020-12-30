@@ -23,7 +23,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
         
         j = 1;
         for i = 1:length(pos_uniques)
-            idx_uniques = find(pos_uniques(i) == pos_multiplots);            
+            idx_uniques = find(pos_uniques(i) == pos_multiplots);
             len_i_multiplots = length(idx_uniques);
                         
             if(iscell(legends{j}))
@@ -133,8 +133,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                 is_multiplot = ~isempty(multiplot_idxs);
                 
                 if(is_multiplot)
-                    
-                    if(iscell(legends{j}))
+                    if(iscell(legends{h}))
                         legends_j = legends{h};
                         markers_j = markers{h};
                     else
@@ -146,6 +145,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     
                     head_x = double(head_x);
                     if(~isfield(plot_config, 'plot_type'))
+                        
                         plot(t, head_x(:, idx), markers_f);
                     else
                         plot_func = str2func(plot_config.plot_type);

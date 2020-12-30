@@ -1,5 +1,5 @@
 function hfigs_references = draw_traj_refs(path)
-    t = [path.t_traj{1}'; path.t_traj{2}'; path.t_traj{3}'];
+    t = [path.t_traj{1}; path.t_traj{2}; path.t_traj{3}];
 
     dtraj = [];
     for i = 1:length(t)

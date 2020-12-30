@@ -69,23 +69,20 @@ function [tspan, sol] = rk_ode(func, x0, tspan, degree)
     tf = tspan(end);
     
     for i = 2:length(tspan)
-        t = tspan(i);
+        t = tspan(i-1);
         
+        length(x0)
         Ks = zeros(length(x0), len_col_k);
         for j = 1:len_row_k
             c_j = vec_t(j);
             a_j = vec_k(j, :)';
-            
             t_j = t + c_j*dt;
-            
             x_j = x_1 + dt*Ks*a_j;
             
             k_j = func(t_j, x_j);
             
             Ks(:, j) = k_j;
-            
         end
-        
         
         x = vpa(x_1) + dt*sym(Ks)*sym(vec_x);
         x_1 = sym(x);

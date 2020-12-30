@@ -1,6 +1,7 @@
 % close all 
 % REQUIRES ROBOTICS4FUN LIBRARY
 % https://github.com/brunolnetto/Robotics4fun
+% clear all
 % close all
 % clc
 % 

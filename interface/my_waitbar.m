@@ -1,6 +1,6 @@
 classdef my_waitbar
     properties
-        idx = tic;
+        idx = '';
         
         % Mask for message ovre progress bar
         time_mask = '%3d.%s %% - %s [%%/s] [%s - %s]';
@@ -62,81 +62,25 @@ classdef my_waitbar
                               obj.t_curr_str, obj.t_end_str);
             
             cancel_callback = 'setappdata(gcbf,''canceling'',1)';
-            obj.wb = waitbar(0, obj.msg,  ...
-                             'Name', obj.name, ... 
+            obj.wb = waitbar(0, obj.msg,  'Name', obj.name, ... 
                              'CreateCancelBtn', cancel_callback);
             
+            obj.wb.UserData = generate_guid;
+            obj.idx = obj.wb.UserData;
+            
             screensize = get(0,'ScreenSize');
+            
             width = screensize(3);
             height = screensize(4);
             l_pos = uniform(0, width);
             b_pos = uniform(0, height);
-            obj.wb.Position = [l_pos, b_pos, ...
-                               obj.wb.Position(3), ...
-                               obj.wb.Position(4)];
-%             wb_texts = findall(obj.wb, 'type', 'text');
-%             set(wb_texts, 'Interpreter', 'latex');
-%             winwidth = 300;           % Width of timebar window
-%             winheight = 85;           % Height of timebar window
-%             
-%             % 2.2 - Define the message textbox
-%             userdata.text(1) = uicontrol(obj.wb,'style','text','hor','left',...     
-%                                          'pos',[10 winheight-30 winwidth-20 20], 'string',message,...                                            
-%                                          'backgroundcolor',wincolor,'tag','message');
-%             
-%             % 2.3 - Build estimated remaining static text textbox
-%             est_text = 'Estimated time remaining: ';
-%             userdata.text(2) = uicontrol(obj.wb,'style','text','string',est_text,...       
-%                 'pos',[10 15 winwidth/2 20],'FontSize',7,...
-%                 'backgroundcolor',wincolor,'HorizontalAlignment','right');
-%             
-%             % 2.4 - Build estimated time textbox
-%             userdata.remain = uicontrol(obj.wb,'style','text','string','',...
-%                 'FontSize',7,'HorizontalAlignment','left',...
-%                 'pos',[winwidth/2+10 14.5 winwidth-25 20], ...
-%                 'backgroundcolor',wincolor);
-% 
-%             % 2.5 - Build elapsed static text textbox
-%             est_text = 'Total elapsed time: ';
-%             userdata.text(3) = uicontrol(obj.wb,'style','text','string',est_text,...       
-%                 'pos',[10 3 winwidth/2 20],'FontSize',7,...
-%                 'backgroundcolor',wincolor,'HorizontalAlignment','right');                                
-%             
-%             % 2.6 - Build elapsed time textbox
-%             userdata.elapse = uicontrol(obj.wb,'style','text','string','',...   
-%                 'pos',[winwidth/2+10 3.5 winwidth-25 20],'FontSize',7, ...                                  
-%                 'backgroundcolor',wincolor,'HorizontalAlignment','left');     
-% 
-%             
-%             % 2.7 - Build percent progress textbox
-%             userdata.percent = uicontrol(obj.wb,'style','text','hor','right',...     
-%                 'pos',[winwidth-35 winheight-52 28 20],'string','',...                                       
-%                 'backgroundcolor',wincolor);
-% 
-%             % 2.8 - Build progress bar axis
-%             userdata.axes = axes('parent',h,'units','pixels','xlim',[0 1],...                                
-%                 'pos',[10 winheight-45 winwidth-50 15],'box','on',...                                     
-%                 'color',[1 1 1],'xtick',[],'ytick',[]);
+            obj.wb.Position = [l_pos, b_pos, obj.wb.Position(3), obj.wb.Position(4)];
             
-%             % TO FIX: Insert pause button
-%             hChildren = get(obj.wb, 'Children');
-%             for k = 1:length(hChildren)
-%                 hChild = hChildren(k);
-%                 if isfield(get(hChild), 'Style')  && ...
-%                    strcmpi(get(hChild,'Style'),'pushbutton')
-%                    
-%                    hChildPos = get(hChild,'Position');                   
-%                    staticTextPos = hChildPos;
-%                    
-%                    staticTextPos(1) = 10;
-%                    staticTextPos(2) = staticTextPos(2) - 20;
-%                    
-%                    hPauseBtn = uicontrol(obj.wb, ...
-%                                          'Style', 'text', ...
-%                                          'String', msg,...
-%                                          'Position', staticTextPos);    
-%                 end
-%             end
+            % Width of timebar window
+            winwidth = 300;
+            
+             % Height of timebar window
+            winheight = 85;
             
             obj.previous_t = tic;
         end
@@ -155,9 +99,9 @@ classdef my_waitbar
             handles = [];
             for i = 1:length(hs)
                 % XXX: Improve unique id
-                unique_id = hs(i).Children(2).Title.String;
-
-                if(strcmp(unique_id, obj.msg))
+                unique_id = hs(i).UserData;
+                
+                if(strcmp(unique_id, obj.idx))
                     h = hs(i);
                     handles = [handles; hs(i)];
                 end
@@ -165,8 +109,8 @@ classdef my_waitbar
             
             if(length(handles) ~= 1)
                 warning('There is more than a handle with prescripted ID.');
+                error('Handle must be unique!');
             end
-            h = handles;
         end
         
         function delete(obj)
@@ -196,7 +140,7 @@ classdef my_waitbar
             % display end time, average speed
             obj.t_real = obj.t_real + dt;
             
-            hour_mask = 'HH:MM:SS';            
+            hour_mask = 'HH:MM:SS';
             obj.t_curr_str = datestr(seconds(obj.t_real), hour_mask);
             
             % Percentage format
@@ -219,9 +163,7 @@ classdef my_waitbar
                 part2_perc = '00';
             else
                 part2_perc = parts{2};
-                part2_perc = terop(length(part2_perc)==2, ...
-                                          part2_perc, ...
-                                          [part2_perc, '0']);
+                part2_perc = terop(length(part2_perc)==2, part2_perc, [part2_perc, '0']);
             end
             
             perc = [part1_perc, '.', part2_perc];
@@ -254,7 +196,6 @@ classdef my_waitbar
                     
                 speed_str = [speed_int_str, '.', speed_dec_str];
             
-            
             else
                 [speed_int, speed_dec] = dec2expnot(speed_f);
                 speed_str = [num2str(speed_int), 'e', num2str(speed_dec)];
@@ -267,7 +208,9 @@ classdef my_waitbar
                 obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');
             else
                 t_f = floor((100/obj.speed)*100)/100;
-                if(isinf(t_f))
+                
+                T_MAX = 99*3600 + 99*59 + 59;
+                if(t_f > T_MAX)
                     obj.t_end_str = 'Undefined';
                 else
                     obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');

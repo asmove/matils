@@ -16,5 +16,5 @@ function theta = arguv(u, v)
     norm_w = norm(w);
     sin_theta = norm_w/norm_v;
 
-    theta = my_atan2(sin_theta, cos_theta);
+    theta = atan2(sin_theta, cos_theta);
 end

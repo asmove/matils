@@ -26,6 +26,16 @@ function paths = traj_tangentAB(A, B, theta_0, v_0, v_01, v_1, alpha_0, alpha_1)
     for i = 1:length(paths) 
         paths{i}.traj_diff = @(t, nd_deriv) nd_tangentAB(t, paths{i}, nd_deriv);
     end
+    
+    dABs = [];
+    for i = 1:length(paths_)
+        path = paths_{i};
+        dAB = path.arg0*path.r0 + path.dCD + path.arg1*path.r1;
+        dABs = [dABs; dAB];
+    end
+    
+    [~, idx] = min(dABs);
+    paths = {paths_{idx}};
 end
 
 function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
@@ -97,14 +107,12 @@ function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
                     arg_od_0 = args_od_0(m);
                     arg_od_1 = args_od_1(n);
                     
-                    % Minus and plus solution             
-                    vec_0 = [cos(phi_0); sin(phi_0)];
-                    vec_1 = [cos(phi_1); sin(phi_1)];
+                    % Minus and plus solution
+                    vec_0_begin = [-sin(phi_0); cos(phi_0)];
+                    vec_1_begin = -[-sin(phi_1); cos(phi_1)];
 
-                    cross0 = cross([vec_0; 0], [rhat0; 0]);
-                    cross1 = cross([vec_1; 0], [rhat1; 0]);
-                    sign_0 = cross0(3)/norm(cross0);
-                    sign_1 = -cross1(3)/norm(cross1);
+                    sign_0 = dot(vec_0_begin, rhat0);
+                    sign_1 = dot(vec_1_begin, rhat1);
 
                     % Connector line orientation
                     norm_CD = norm(dest_1 - dest_0);
@@ -114,14 +122,14 @@ function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
                     t_0 = arg_od_0/omega_0;
                     t_01 = norm_CD/v_01;
                     t_1 = arg_od_1/omega_1;
+                    
+                    vec_0_end = [cos(sign_0*arg_od_0 + phi_0); ...
+                                 sin(sign_0*arg_od_0 + phi_0)];
+                    vec_1_end = [cos(sign_1*arg_od_1 + phi_1); ...
+                                 sin(sign_1*arg_od_1 + phi_1)];
 
-                    vec_0 = [cos(sign_0*arg_od_0 + phi_0); ...
-                             sin(sign_0*arg_od_0 + phi_0)];
-                    vec_1 = [cos(sign_1*arg_od_1 + phi_1); ...
-                             sin(sign_1*arg_od_1 + phi_1)];
-
-                    dest_0_ = r0*vec_0 + center_0;
-                    dest_1_ = r1*vec_1 + center_1;
+                    dest_0_ = r0*vec_0_end + center_0;
+                    dest_1_ = r1*vec_1_end + center_1;
 
                     orient_0_orig = sign_0*[-sin(phi_0); cos(phi_0)];
                     orient_1_orig = sign_1*[-sin(phi_1); cos(phi_1)];
@@ -136,41 +144,12 @@ function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
                     CD_cond0 = abs(dot(orient_0_dest, CD_hat) - 1) < EPS_;
                     CD_cond1 = abs(dot(orient_1_dest, CD_hat) + 1) < EPS_;
 
-                    if(pos_cond0 && pos_cond1)
+                    if(CD_cond1 && pos_cond1)
                         orient_1 = sign_1*[-sin(sign_1*arg_od_1 + phi_1); ...
                                             cos(sign_1*arg_od_1 + phi_1)];
                         orient_B = sign_1*[-sin(phi_1); cos(phi_1)];
 
-                        if(CD_cond0 && CD_cond1)
-%                             disp('-------------');
-%                             disp('Destinys     : ');
-%                             fprintf('Original   0 : (%+2.4f, %+2.4f) \n', dest_0(1), dest_0(2));
-%                             fprintf('Calculated 0 : (%+2.4f, %+2.4f) \n', dest_0_(1), dest_0_(2));
-%                             fprintf('Original   1 : (%+2.4f, %+2.4f) \n', dest_1(1), dest_1(2));
-%                             fprintf('Calculated 1 : (%+2.4f, %+2.4f) \n', dest_1_(1), dest_1_(2));
-% 
-%                             fprintf('\n');
-% 
-%                             fprintf('sign 0: %d \n', sign_0);
-%                             fprintf('sign 1: %d \n', sign_1);
-% 
-%                             fprintf('\n');
-% 
-%                             disp('Orig orient :');
-%                             fprintf('     0 -> (%+2.4f, %+2.4f) \n', orient_0_orig(1), orient_0_orig(2));
-%                             fprintf(' rhat0 -> (%+2.4f, %+2.4f) \n', rhat0(1), rhat0(2));
-%                             fprintf('     1 -> (%+2.4f, %+2.4f) \n', orient_1_orig(1), orient_1_orig(2));
-%                             fprintf(' rhat1 -> (%+2.4f, %+2.4f) \n', rhat1(1), rhat1(2));
-% 
-%                             fprintf('\n');
-% 
-%                             disp('Dest Orient : ');
-%                             fprintf('     0 -> (%+2.8f, %+2.8f) \n', orient_0_dest(1), orient_0_dest(2));
-%                             fprintf(' dot 0 -> %.2f \n', dot(orient_0_dest, CD_hat));
-%                             fprintf('     1 -> (%+2.8f, %+2.8f) \n', orient_1_dest(1), orient_1_dest(2));
-%                             fprintf(' dot 1 -> %.2f \n ', dot(orient_1_dest, CD_hat));
-%                             fprintf('    CD -> (%+2.8f, %+2.8f) \n', CD_hat(1), CD_hat(2));
-%                             disp('-------------');
+                        if(CD_cond0 && pos_cond0)
                             
                             % First circle
                             path_0 = [];
@@ -198,6 +177,7 @@ function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
 
                                 path_1 = [path_1; pos_1'];
                             end
+                            
                             path_1 = flipud(path_1);
 
                             % Second circle
@@ -218,7 +198,10 @@ function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
                             
                             paths{i}.t_traj = t_traj;
                             paths{i}.trajectory = path_to_goal;
-
+                            
+                            paths{i}.sign_0 = sign_0;
+                            paths{i}.sign_1 = sign_1;
+                            
                             paths{i}.dest_0 = dest_0;
                             paths{i}.orig_1 = dest_1;
 
@@ -247,17 +230,6 @@ function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
     end
     
     paths = paths_;
-    
-    dABs = [];
-    for i = 1:length(paths_)
-        path = paths_{i};
-        dAB = path.arg0*path.r0 + path.dCD + path.arg1*path.r1;
-        dABs = [dABs; dAB];
-    end
-    
-    [~, idx] = min(dABs);
-    paths = {paths_{idx}};
-    
 end
 
 function paths = calculate_paths(A, B, v_0, v_01, v_1, alpha_0, alpha_1, theta_0)
@@ -360,9 +332,6 @@ function traj_ = nd_tangentAB(t, path, nd_traj)
     t_0  = path.t_0;
     t_01 = path.t_01;
     t_1  = path.t_1;
-
-    COMPLIANCE_INTERVAL = 1.1;    
-    %fprintf('t: %.5f; t_1: %.5f; t_2: %.5f; t_3: %.5f; \n', t, t_0, t_0 + t_01, t_0 + t_01 + t_1);
     
     r0 = path.r0;
     r1 = path.r1;
@@ -376,6 +345,7 @@ function traj_ = nd_tangentAB(t, path, nd_traj)
     sign_0 = path.sign_0;
     sign_1 = path.sign_1;
     
+    EPS_ = 1e-3;
     if((t >= 0) && (t < t_0))
         vecs_0 = {};
         vecs_0{1} = [cos(sign_0*omega_0*t + phi_0); 
@@ -389,7 +359,7 @@ function traj_ = nd_tangentAB(t, path, nd_traj)
 
         idx = mod(nd_traj, 4) + 1;
 
-        traj_ = ((sign_0*omega_0)^nd_traj)*vecs_0{idx};
+        traj_ = r0*((sign_0*omega_0)^nd_traj)*vecs_0{idx};
 
     elseif((t >= t_0) && (t < t_0 + t_01))
         if(nd_traj == 1)
@@ -398,22 +368,20 @@ function traj_ = nd_tangentAB(t, path, nd_traj)
             traj_ = zeros(size(path.orig_1));
         end
         
-    elseif((t >= t_0 + t_01) && (t <= t_0 + t_01 + t_1))
-        t = t - t_0 - t_01;
-        
+    elseif((t >= t_0 + t_01) && (t <= (1 + EPS_)*(t_0 + t_01 + t_1)))
         vecs_1 = {};
-        vecs_1{1} = [cos(sign_1*omega_1*t + phi_1); 
-                     sin(sign_1*omega_1*t + phi_1)];
-        vecs_1{2} = [-sin(sign_1*omega_1*t + phi_1); 
-                      cos(sign_1*omega_1*t + phi_1)];
-        vecs_1{3} = [-cos(sign_1*omega_1*t + phi_1); 
-                     -sin(sign_1*omega_1*t + phi_1)];
-        vecs_1{4} = [sin(sign_1*omega_1*t + phi_1); 
-                    -cos(sign_1*omega_1*t + phi_1)];
+        vecs_1{1} = [cos(sign_1*omega_1*(t_0 + t_01 + t_1 - t) + phi_1);
+                     sin(sign_1*omega_1*(t_0 + t_01 + t_1- t) + phi_1)];
+        vecs_1{2} = [-sin(sign_1*omega_1*(t_0 + t_01 + t_1- t) + phi_1);
+                      cos(sign_1*omega_1*(t_0 + t_01 + t_1- t) + phi_1)];
+        vecs_1{3} = [-cos(sign_1*omega_1*(t_0 + t_01 + t_1- t) + phi_1);
+                     -sin(sign_1*omega_1*(t_0 + t_01 + t_1- t) + phi_1)];
+        vecs_1{4} = [sin(sign_1*omega_1*(t_0 + t_01 + t_1- t) + phi_1);
+                     -cos(sign_1*omega_1*(t_0 + t_01 + t_1- t) + phi_1)];
 
         idx = mod(nd_traj, 4) + 1;
 
-        traj_ = ((sign_1*omega_1)^nd_traj)*vecs_1{idx};
+        traj_ = r1*((-sign_1*omega_1)^nd_traj)*vecs_1{idx};
     else
         error('Trajectory exceeds predefined time!');
     end

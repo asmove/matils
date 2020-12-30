@@ -1,14 +1,14 @@
-% clear all
-% close all
-% clc
+clear all
+close all
+clc
 
 % Percentage of segment between A and B
 alpha_0 = 0.2;
 alpha_1 = 0.2;
 
 % Begin and end points
-A = [1; 1];
-B = [1.4030; 1.8631];
+A = [0; 0];
+B = [1; 1];
 theta_0 = 0;
 
 % Velocities on respective paths
