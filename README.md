@@ -10,7 +10,7 @@ cd ~/matlab-utils
 git clone https://github.com/brunolnetto/matlab-utils
 ```
 
-Most likely, the reader may use Windows. For such, the author recommends either the Git Bash or Tortoise Git as source management software. Git bash, although it a terminal, the copy-paste of above commands works the same manner as for linux terminal.
+Most likely, the reader may use Windows. For such, the author recommends either the Git Bash or Tortoise Git as source management software. Git bash, although it is a terminal, the copy-paste of above commands works the same manner as for linux terminal.
 
 # Installation
 
