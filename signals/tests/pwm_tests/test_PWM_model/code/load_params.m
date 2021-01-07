@@ -8,7 +8,7 @@ symbs = [J b R L k_i k_w n];
 
 thp_eq = thp;
 thpp_eq = (-b/J)*thp + (k_i/J)*curr;
-ip_eq = u - k_w*thp - R*curr;
+ip_eq = (u - k_w*thp - R*curr)/L;
 
 eqs = [thp_eq; thpp_eq; ip_eq];
 
@@ -16,10 +16,10 @@ y_eq = [n*k_i*curr; th; thp; curr];
 
 states = [th; thp; curr];
 
-A = equationsToMatrix(eqs, states);
-B = equationsToMatrix(eqs, u);
-C = equationsToMatrix(y_eq, states);
-D = equationsToMatrix(y_eq, u);
+A_sym = equationsToMatrix(eqs, states);
+B_sym = equationsToMatrix(eqs, u);
+C_sym = equationsToMatrix(y_eq, states);
+D_sym = equationsToMatrix(y_eq, u);
 
 % Rotor inertia [kg m^3]
 J_val = 0.02;
@@ -45,12 +45,21 @@ n_val = 50;
 vals = [J_val b_val R_val L_val ...
         k_i_val k_w_val n_val];
 
-A = double(subs(A, symbs, vals));
-B = double(subs(B, symbs, vals));
-C = double(subs(C, symbs, vals));
-D = double(subs(D, symbs, vals));
+% State space representation
+A = double(subs(A_sym, symbs, vals));
+B = double(subs(B_sym, symbs, vals));
+C = double(subs(C_sym, symbs, vals));
+D = double(subs(D_sym, symbs, vals));
 
+% Voltage levels [V]
 min_val = 0;
 max_val = 2;
-alpha = 0.5;
+
+u_num = [min_val; max_val];
+
+% Duty cycle [%/100]
+alpha_ = 0.5;
+
+% PWM period [s]
 T = 1e-3;
+

@@ -175,8 +175,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     end
                     
                     legend(legends_j, ...
-                           'interpreter', 'latex', ...
-                           'Location', 'best');
+                           'interpreter', 'latex');
                     
                     hold off;
 
