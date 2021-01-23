@@ -28,14 +28,14 @@ function paths = traj_tangentAB(A, B, theta_0, v_0, v_01, v_1, alpha_0, alpha_1)
     end
     
     dABs = [];
-    for i = 1:length(paths_)
-        path = paths_{i};
+    for i = 1:length(paths)
+        path = paths{i};
         dAB = path.arg0*path.r0 + path.dCD + path.arg1*path.r1;
         dABs = [dABs; dAB];
     end
     
     [~, idx] = min(dABs);
-    paths = {paths_{idx}};
+    paths = {paths{idx}};
 end
 
 function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)

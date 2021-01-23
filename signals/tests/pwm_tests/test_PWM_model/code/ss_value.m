@@ -15,22 +15,26 @@ Ts_val = 1.1e-2;
 dalpha = 1e-2;
 alphas = 0:dalpha:1;
 
+n_alpha = length(alphas);
+
 symbs = [alpha_sym; beta_sym; Ts];
 ranks = [];
 
-for i = 1:length(alphas)
-    alpha_ = alphas(i);
-    beta_ = 1 - alpha_;
+wb = my_waitbar('PWM rank matrix');
 
-    vals = [alpha_; beta_; T];
-    
-    [phi_Ts, gamma_Ts] = ss_PWM(0.1, A_, B_, Tpwm_val, Ts_val);
+for i = 1:n_alpha
+    alpha_ = alphas(i);
+    [phi_Ts, gamma_Ts] = ss_PWM(alpha_, A_, B_, Tpwm_val, Ts_val);
     Mc = ctrb(phi_Ts, gamma_Ts);
     
     rank_ = rank(Mc);
 
     ranks = [ranks; rank_];
+    
+    wb.update_waitbar(i, n_alpha);
 end
+
+wb.close_window();
 
 plot_config.titles = {''};
 plot_config.xlabels = {'$\alpha$'};
@@ -38,4 +42,5 @@ plot_config.ylabels = {'rank($\mathcal{C}$)'};
 plot_config.grid_size = [1, 1];
 
 hfig_u = my_plot(alphas, ranks, plot_config);
+
 
