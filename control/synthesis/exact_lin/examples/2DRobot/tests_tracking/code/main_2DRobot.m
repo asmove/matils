@@ -1,8 +1,8 @@
-clear all
-close all
-clc
-
-run('~/github/quindim/examples/2D_unicycle/code/main.m');
+% clear all
+% close all
+% clc
+% 
+% run('~/github/quindim/examples/2D_unicycle/code/main.m');
 
 syms t_ T;
 
@@ -106,7 +106,7 @@ poles_ = {-scaler*limiter*ones(3, 1), ...
           -scaler*limiter*ones(3, 1)};
 is_dyn_control = true;
 
-[dz, u] = calc_control_2DRobot(sys, poles_);
+[dz, v_, u] = calc_control_2DRobot(sys, poles_);
 
 % [x; y; phi; v; omega; dv]
 x0 = [P0; theta0; 1; 0; 0];
@@ -136,14 +136,6 @@ options = struct('');
 % 
 % options = struct('frequency', frequency, ...
 %                  'amplitude', amplitude);
-
-calc_u_func = @() calc_control_2DRobot(sys, poles_);
-u_func = @(t, qp) u_control(t, qp, ref_func, ...
-                            sys, calc_u_func, ...
-                            options);
-
-sol = validate_model(sys, t, x0, u_func, is_dyn_control);
-
 sol = sol';
 t = t';
 

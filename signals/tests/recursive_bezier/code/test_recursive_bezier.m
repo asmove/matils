@@ -1,3 +1,7 @@
+clear all
+close all
+clc
+
 dt = 0.01;
 tf = 1;
 t = 0:dt:tf;
@@ -22,8 +26,8 @@ eps_ = 0.5;
 C = A + r0*eps_;
 D = B - r1*eps_;
 
-% Ps = {A'; C'; D'; B'};
-Ps = {A'; B'};
+Ps = {A'; C'; D'; B'};
+% Ps = {A'; B'};
 
 P_ts = [];
 for i = 1:length(t)
@@ -63,15 +67,13 @@ hold off
 axis square
 
 title('Trajectories from A to B', ...
-      'interpreter', 'latex', ...
-      'Fontsize', 12);
+      'interpreter', 'latex');
 xlabel('x');
 ylabel('y');
 
 aux_leg = legend({'B$\acute{e}$zier curve 1', ...
                   'B$\acute{e}$zier curve 2'}, ... 
                   'interpreter', 'latex', ...
-                  'Fontsize', 12, ...
                   'Location', 'northwest');
 
 nd_degree = 1;
@@ -104,46 +106,7 @@ plot_config.markers = {{'-', '--'}, {'-', '--'}, ...
 plot_config.axis_style = 'square';
 
 bezier_points = {[P_ts, dP_ts1], [P_sym, dP_ts2]};
-[hfigs_bezier, axs] = my_plot(t, bezier_points, plot_config);
-
-% Bezier
-hfig_dbezier = my_figure();
-
-plot(dP_ts1(:, 1), dP_ts1(:, 2), 'k-');
-hold on;
-plot(dP_ts2(:, 1), dP_ts2(:, 2), 'k--');
-
-hold on
-plot(dP_ts1(1, 1), dP_ts1(1, 2), '-p', ...
-    'MarkerFaceColor','red',...
-    'MarkerSize',15);
-
-hold on
-plot(dP_ts1(end, 1), dP_ts1(end, 2), ...
-    '-s','MarkerSize',10,...
-    'MarkerEdgeColor','red',...
-    'MarkerFaceColor',[1 .6 .6]);
-
-hold on
-plot(dP_ts2(1, 1), dP_ts2(1, 2), '-p', ...
-    'MarkerFaceColor','red',...
-    'MarkerSize',15);
-
-hold on
-plot(dP_ts2(end, 1), dP_ts2(end, 2), ...
-    '-s', 'MarkerSize',10,...
-    'MarkerEdgeColor','red',...
-    'MarkerFaceColor',[1 .6 .6]);
-
-hold off
-
-axis square
-
-title('Trajectories from A to B', ...
-      'interpreter', 'latex', ...
-      'Fontsize', 12);
-xlabel('x');
-ylabel('y');
+[hfig_dbezier, axs] = my_plot(t, bezier_points, plot_config);
 
 deriv_msg = sprintf('{d^{(%d)}}{dt^{(%d)}}', nd_degree, nd_degree);
 msg = {'B$\acute{e}$zier curve 1', ...
@@ -153,6 +116,10 @@ aux_leg = legend(msg, ...
                  'Fontsize', 12, ...
                  'Location', 'northwest');
 
+axs{1}{1}.FontSize = 25;
+axs{1}{2}.FontSize = 25;
+axs{1}{3}.FontSize = 25;
+axs{1}{4}.FontSize = 25;
 
 % Save folder
 path = [pwd '/../imgs/'];

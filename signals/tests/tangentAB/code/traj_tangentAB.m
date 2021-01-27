@@ -1,6 +1,14 @@
-function paths = traj_tangentAB(A, B, theta_0, v_0, v_01, v_1, alpha_0, alpha_1)
+function paths = traj_tangentAB(A, B, ...
+                                theta_0, ...
+                                v_0, v_01, v_1, ...
+                                alpha_0, alpha_1, ...
+                                choose_shortest)
     if((alpha_1 > 0) && (alpha_0 > 0) && (alpha_0 + alpha_1 > 1))
         error('alpha_0 and alpha_1 must sum 1 and be greater than 0');
+    end
+    
+    if(nargin == 8)
+        choose_shortest = true;
     end
     
     % Distance between path points
@@ -16,6 +24,7 @@ function paths = traj_tangentAB(A, B, theta_0, v_0, v_01, v_1, alpha_0, alpha_1)
     omega_1 = v_1/r1;
     
     paths = calculate_paths(A, B, v_0, v_01, v_1, alpha_0, alpha_1, theta_0);
+    
     paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0);
     
     for i = 1:length(paths)
@@ -27,15 +36,17 @@ function paths = traj_tangentAB(A, B, theta_0, v_0, v_01, v_1, alpha_0, alpha_1)
         paths{i}.traj_diff = @(t, nd_deriv) nd_tangentAB(t, paths{i}, nd_deriv);
     end
     
-    dABs = [];
-    for i = 1:length(paths)
-        path = paths{i};
-        dAB = path.arg0*path.r0 + path.dCD + path.arg1*path.r1;
-        dABs = [dABs; dAB];
+    if(choose_shortest)
+        dABs = [];
+        for i = 1:length(paths)
+            path = paths{i};
+            dAB = path.arg0*path.r0 + path.dCD + path.arg1*path.r1;
+            dABs = [dABs; dAB];
+        end
+
+        [~, idx] = min(dABs);
+        paths = {paths{idx}};
     end
-    
-    [~, idx] = min(dABs);
-    paths = {paths{idx}};
 end
 
 function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
@@ -44,9 +55,6 @@ function paths = feasible_paths(paths, A, B, r0, r1, v_0, v_01, v_1, theta_0)
     % Orientations
     BA = B - A;
     theta_1 = atan2(BA(2), BA(1));
-    
-    % sigma = 0.1;
-    % theta_1 = theta_1 + gaussianrnd(0, sigma);
     
     omega_0 = v_0/r0;
     omega_1 = v_1/r1;

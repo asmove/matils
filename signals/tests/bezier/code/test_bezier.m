@@ -44,6 +44,9 @@ title('Points with orientation of B \textbf{not} coincidental to point A', 'inte
 xlabel('x');
 ylabel('y');
 
+ax =  gca;
+ax.FontSize = 25;
+
 % [m]
 A = [0; 0];
 B = [1; 1];
@@ -70,6 +73,7 @@ x = 0:dx:xf;
 Ps = bezier(P, 100);
 
 hfig_AB_concur = my_figure();
+
 plot(P(:, 1), P(:, 2), 'x');
 hold on;
 plot(Ps(:, 1), Ps(:, 2), '-');
@@ -79,6 +83,9 @@ axis square
 title('Points with orientation of point B coincidental to point A', 'interpreter', 'latex');
 xlabel('x');
 ylabel('y');
+
+ax =  gca;
+ax.FontSize = 25;
 
 % Save folder
 path = [pwd '/../imgs/'];

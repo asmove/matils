@@ -34,5 +34,14 @@ function hfigs_references = draw_traj_refs(path)
 
     ys = [traj, dtraj, ddtraj, dddtraj];
 
-    [hfigs_references, ~] = my_plot(t, ys, plot_config);
+    [hfigs_references, axs] = my_plot(t, ys, plot_config);
+    
+    axs{1}{1}.FontSize = 25;
+    axs{1}{2}.FontSize = 25;
+    axs{1}{3}.FontSize = 25;
+    axs{1}{4}.FontSize = 25;
+    axs{1}{5}.FontSize = 25;
+    axs{1}{6}.FontSize = 25;
+    axs{1}{7}.FontSize = 25;
+    axs{1}{8}.FontSize = 25;
 end

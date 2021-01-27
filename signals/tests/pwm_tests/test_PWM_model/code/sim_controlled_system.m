@@ -3,9 +3,6 @@ x0 = [0; 0];
 
 e0 = torque_ref - k_i_val*x0(2);
 
-% Final time
-t_f = 5;
-
 load_system(model_name);
 
 simMode = get_param(model_name, 'SimulationMode');

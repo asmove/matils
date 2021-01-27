@@ -1,7 +1,7 @@
 clear all
 close all
 clc
-
+my_figure
 % Percentage of segment between A and B
 alpha_0 = 0.2;
 alpha_1 = 0.2;
@@ -16,8 +16,9 @@ v_0 = 1;
 v_01 = 1;
 v_1 = 1;
 
-paths = traj_tangentAB(A, B, theta_0, v_0, v_01, v_1, ...
-                       alpha_0, alpha_1);
+paths = traj_tangentAB(A, B, theta_0, ...
+                       v_0, v_01, v_1, ...
+                       alpha_0, alpha_1, false);
 
 for i = 1:length(paths)
     path = paths{i};

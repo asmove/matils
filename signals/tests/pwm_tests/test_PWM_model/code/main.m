@@ -19,11 +19,11 @@ run('load_params.m');
 
 % Discrete-only controlled system
 run('load_discrete_controller.m');
-% 
-% model_name = 'discrete_controlled_system';
-% run('sim_controlled_system.m');
-% 
-% run('plot_discrete_signals.m');
+
+model_name = 'discrete_controlled_system';
+run('sim_controlled_system.m');
+
+run('plot_discrete_signals.m');
 
 % Average-PWM controlled system
 run('load_pwm_avg_controller.m');
@@ -31,12 +31,14 @@ run('load_pwm_avg_controller.m');
 model_name = 'pwm_avg_controlled_system';
 run('sim_controlled_system.m');
 
+prefix = 'avg_pwm';
 run('plot_pwm_signals.m');
 
-% % Discrete controller project, PWM controlled system
-% run('load_pwm_controller.m');
-% 
-% model_name = 'pwm_controlled_system';
-% run('sim_controlled_system.m');
-% 
-% run('plot_pwm_signals.m');
+% Discrete controller project, PWM controlled system
+run('load_pwm_controller.m');
+
+model_name = 'pwm_controlled_system';
+run('sim_controlled_system.m');
+
+prefix = 'pwm';
+run('plot_pwm_signals.m');

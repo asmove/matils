@@ -1,7 +1,3 @@
-% PWM and sampling periods
-Tpwm_val = 1e-3;
-Ts_val = 1e-1;
-
 B_pwm = double(subs(B_sym*Vcc, symbs, vals));
 
 sys = ss(A, B_pwm, C, D);

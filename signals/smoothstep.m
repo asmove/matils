@@ -1,5 +1,6 @@
-function func_val = smoothstep(t, T, y_begin, y_end, degree)
-    x = t/T;
+function func_val = smoothstep(t, T_begin, T_end, y_begin, y_end, degree)
+    delta_T = T_end - T_begin;
+    x = (t - T_begin)/delta_T;
     
     func_val = 0;
     
@@ -7,7 +8,7 @@ function func_val = smoothstep(t, T, y_begin, y_end, degree)
         for k = 0:degree
             comb_1 = nchoosek(degree+k, k);
             comb_2 = nchoosek(2*degree+1, degree-k);
-            monome = dsmoothstep_monome(x, k, degree, 0, T);
+            monome = dsmoothstep_monome(x, k, degree, 0, 1);
             func_val = func_val + monome;
         end
         

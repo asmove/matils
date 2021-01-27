@@ -145,7 +145,6 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                     
                     head_x = double(head_x);
                     if(~isfield(plot_config, 'plot_type'))
-                        
                         plot(t, head_x(:, idx), markers_f);
                     else
                         plot_func = str2func(plot_config.plot_type);

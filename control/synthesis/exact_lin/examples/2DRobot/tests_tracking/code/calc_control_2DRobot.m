@@ -1,4 +1,4 @@
-function [dz, u] = calc_control_2DRobot(sys, poles_)
+function [dz, v_, u] = calc_control_2DRobot(sys, poles_)
     % Output and reference
     y = sys.kin.q(1:2);
     
@@ -138,9 +138,7 @@ function [dz, u] = calc_control_2DRobot(sys, poles_)
     L_3_f_h1 = simplify_(d3y1dt3 - L_G_L_2_f_h1*w_syms);
     L_3_f_h2 = simplify_(d3y2dt3 - L_G_L_2_f_h2*w_syms);
     
-    latex([L_3_f_h1; L_3_f_h2])
-    
-    A2 = [L_G_L_2_f_h1; L_G_L_2_f_h2]
+    A2 = [L_G_L_2_f_h1; L_G_L_2_f_h2];
     
     y = sys.kin.q(1:2);
     yp = sys.kin.qp(1:2);

@@ -17,24 +17,22 @@ plot_config.ylabels = {'$\tau$ [N $\cdot$ m]', ...
                        '$i$ [A]'};
 plot_config.legends = {{'$\tau(t)$', '$\tau_{ss}(t)$'}, ...
                        {'$i(t)$', '$i_{ss}(t)$'}};
-plot_config.grid_size = [1, 3];
+plot_config.grid_size = [3, 1];
 plot_config.pos_multiplots = [1, 3];
 plot_config.markers = {markers, markers};
 
-hfig_x = my_plot(tspan, y, plot_config);
+[hfig_x, axs] = my_plot(tspan, y, plot_config);
 
-plot_config.titles = repeat_str('', 1);
-plot_config.xlabels = {'t [s]'};
-plot_config.ylabels = {'$\alpha$ [\%]'};
-plot_config.grid_size = [1, 1];
-plot_config.plot_type = 'stairs';
-
-hfig_u = my_plot(t_u, u, plot_config);
+axs{1}{1}.FontSize = 25;
+axs{1}{2}.FontSize = 25;
+axs{1}{3}.FontSize = 25;
 
 u_sat = simOut.u_sat;
+u_s = u_sat.signals.values;
 
-t_u = u_sat.time;
-u_ = u_sat.signals.values;
+us = {u, u_s};
+
+markers = {'--', '-'};
 
 plot_config.titles = repeat_str('', 1);
 plot_config.xlabels = {'t [s]'};
@@ -42,4 +40,44 @@ plot_config.ylabels = {'$\alpha$ [\%]'};
 plot_config.grid_size = [1, 1];
 plot_config.plot_type = 'stairs';
 
-hfig_u = my_plot(t_u, u_, plot_config);
+plot_config.legends = {'$\alpha(t)$', '$\alpha_{sat}(t)$'};
+plot_config.pos_multiplots = 1;
+plot_config.markers = markers;
+
+[hfig_alpha, axs] = my_plot(t_u, us, plot_config);
+
+axs{1}{1}.FontSize = 25;
+axs{1}{1}.YLim = [0, 2];
+
+% Save folder
+path = [pwd '/../imgs/'];
+
+if(strcmp(model_name, 'pwm_controlled_system'))
+    u_pwm = simOut.u_pwm;
+
+    t_p = u_pwm.time;
+    u_p = u_pwm.signals.values;
+    
+    plot_config.titles = repeat_str('', 1);
+    plot_config.xlabels = {'t [s]'};
+    plot_config.ylabels = {'$u$ [V]'};
+    plot_config.grid_size = [1, 1];
+
+    [hfig_pwm, axs] = my_plot(t_p, u_p, plot_config);
+    
+    scaler = 1.2;
+    
+    axs{1}{1}.FontSize = 25;
+    axs{1}{1}.YLim = [0, scaler*Vcc_val];
+
+    fname = '_pwm';
+    saveas(hfig_pwm, [path, prefix, fname], 'epsc');
+end
+
+fname = '_x';
+saveas(hfig_x, [path, prefix, fname], 'epsc');
+
+fname = '_alpha';
+saveas(hfig_alpha, [path, prefix, fname], 'epsc');
+
+

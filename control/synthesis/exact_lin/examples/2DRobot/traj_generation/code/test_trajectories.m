@@ -1,4 +1,4 @@
-% run('~/github/Robotics4fun/examples/2D_unicycle/code/main.m')
+% run('~/github/quindim/examples/2D_unicycle/code/main.m')
 
 dt = 0.01;
 tf = 1;
@@ -19,8 +19,8 @@ for i = 1:length(t)
     line2P = [line2P; Pt'];
 end
 
-% Bézier curve - AB // orient(B)
-% [m]
+% --------- Bezier Curve ---------
+% AB // orient(B) [m]
 T = 10;
 
 % [rad]
@@ -57,19 +57,18 @@ traj_types = {'exp', 'polynomial'};
 Ps_smooths = {};
 xhat_smooths = {};
 for j = 1:length(traj_types)
-   [params_syms, params_sols, params_model] = ...
-       gentrajmodel_2Drobot(sys, traj_types{j}, tf, points_);
+   [params_syms, ...
+    params_sols, ...
+    params_model] = gentrajmodel_2Drobot(sys, traj_types{j}, tf, points_);
     
     Ps_ = [];
     fs = [];
     for i = 1:length(t)
         t_i = t(i);
-        P_i = double(subs(params_model, ...
-                          [params_syms; ...
-                           sym('t'); ...
-                           sym('T')], ...
-                          [double(params_sols); ...
-                           t_i; tf]));
+        symbs = [params_syms; sym('t'); sym('T')];
+        vals = [double(params_sols); t_i; tf];
+        
+        P_i = double(my_subs(params_model, symbs, vals));
         
         f_i = oracle(P_i);
         fs = [fs; f_i];
@@ -125,8 +124,7 @@ hold off
 axis square
 
 title('Trajectories from A to B', ...
-      'interpreter', 'latex', ...
-      'Fontsize', 12);
+      'interpreter', 'latex');
 xlabel('x');
 ylabel('y');
 
@@ -135,14 +133,13 @@ aux_leg = legend({'Line', ...
                   'Exponential', ...
                   'Polynomial'}, ... 
                   'interpreter', 'latex', ...
-                  'Fontsize', 12, ...
                   'Location', 'northwest');
     
 % Save folder
 path = [pwd '/../imgs/'];
 posfix = [];
 
-fname = 'AB_concur';
+fname = 'AB_concur.eps';
 saveas(hfig, [path, fname], 'epsc')
 
 
