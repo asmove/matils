@@ -1,4 +1,4 @@
-function [dz, v_, u] = calc_control_2DRobot(sys, poles_)
+function u_struct = calc_u_2DRobot(sys, poles_)
     % Output and reference
     y = sys.kin.q(1:2);
     
@@ -43,11 +43,15 @@ function [dz, v_, u] = calc_control_2DRobot(sys, poles_)
     ypp_ref = add_symsuffix(sys.kin.qpp(1:2), '_ref');
     yppp_ref = add_symsuffix([xppp; yppp], '_ref');
     
+    refs = [y_ref; yp_ref; ypp_ref; yppp_ref];
+    
     z_1 = sym('z_1');
     x_orig = [q; p; v(2)];
     x_sym = sym('x_', [n_q + n_p + 1, 1]);
 
     v = sym('v', [2, 1]);
+    
+    n = n_q + n_p + 1;
 
     ref_syms = [y_ref; yp_ref; ypp_ref; yppp_ref];
 
@@ -100,14 +104,14 @@ function [dz, v_, u] = calc_control_2DRobot(sys, poles_)
     y1 = subs(y1, x_orig, x_sym);
     dy1dt = subs(dy1dt, x_orig, x_sym);
     d2y1dt2 = subs(d2y1dt2, x_orig, x_sym);
-    d2y1dt2 = subs(d2y1dt2, v(1), x_sym(n_q + n_p + 1));
+    d2y1dt2 = subs(d2y1dt2, v(1), x_sym(n));
     d3y1dt3 = simplify_(dvecdt(d2y1dt2, x_sym, plant));
     
     % y2
     y2 = subs(y2, x_orig, x_sym);
     dy2dt = subs(dy2dt, x_orig, x_sym);
     d2y2dt2 = subs(d2y2dt2, x_orig, x_sym);
-    d2y2dt2 = subs(d2y2dt2, v(1), x_sym(n_q + n_p + 1));
+    d2y2dt2 = subs(d2y2dt2, v(1), x_sym(n));
     d3y2dt3 = simplify_(dvecdt(d2y2dt2, x_sym, plant));
     
     dydt = [dy1dt; dy2dt];
@@ -144,9 +148,9 @@ function [dz, v_, u] = calc_control_2DRobot(sys, poles_)
     yp = sys.kin.qp(1:2);
     ypp = sys.kin.qpp(1:2);
     yppp = [xppp; yppp];
-
+    
     % Error and its derivatives
-    e = x_sym(1:2) - y_ref;
+    e = y - y_ref;
     ep = dydt - yp_ref;
     epp = d2ydt2 - ypp_ref;
 
@@ -172,15 +176,31 @@ function [dz, v_, u] = calc_control_2DRobot(sys, poles_)
     
     invA2 = simplify_(inv(A2));
     
-    w = simplify_(vpa(invA2*(-L_3_f_h-K2*epp-K1*ep-K0*e+yppp_ref)));
+    w = simplify_(vpa(invA2*(-L_3_f_h-K2*epp - K1*ep - K0*e + yppp_ref)));
     w = vpa(subs(w, symbs, model_params));
 
-    v_ = V*[x_sym(n_q + n_p + 1); w(2)];
+    v_ = V*[x_sym(n); w(2)];
     
-    x_sym = sym('x_', [n_q + n_p + 1, 1]);
-    x_orig = [q; p; x_sym(n_q + n_p + 1)];
+    v = sym('v', size(v_));
+    x_sym = sym('x_', [n, 1]);
+    x_orig = [q; p; x_sym(n)];
     
-    u = subs(inv(Z)*(H*v_ + h), x_orig, x_sym);
+    symbs = [symbs, x_orig];
+    vals = [model_params, x_sym];
+    
+    u = my_subs(inv(Z)*(H*v + h), symbs, vals);
     
     dz = w(1);
+    
+    dz = my_subs(dz, symbs, vals);
+    v_ = my_subs(v_, symbs, vals);
+    u = my_subs(u, symbs, vals);
+
+    u_struct.dz = dz;
+    u_struct.v = v_;
+    u_struct.v_sym = v;
+    u_struct.u = u;
+    u_struct.x_sym = x_sym; 
+    u_struct.x_orig = x_orig;
+    u_struct.ref_syms = refs;
 end

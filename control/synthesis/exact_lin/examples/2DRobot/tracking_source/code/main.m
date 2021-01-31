@@ -3,7 +3,7 @@ close all
 clc
 
 % Load system
-run('~/github/Robotics4fun/examples/2D_unicycle/code/main.m');
+run('~/github/quindim/examples/2D_unicycle/code/main.m');
 
 clearvars -except sys
 clear_inner_close_all(pwd);

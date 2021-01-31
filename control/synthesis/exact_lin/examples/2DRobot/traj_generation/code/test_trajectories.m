@@ -1,4 +1,8 @@
-% run('~/github/quindim/examples/2D_unicycle/code/main.m')
+clear all
+close all
+clc
+
+run('~/github/quindim/examples/2D_unicycle/code/main.m')
 
 dt = 0.01;
 tf = 1;
@@ -21,7 +25,7 @@ end
 
 % --------- Bezier Curve ---------
 % AB // orient(B) [m]
-T = 10;
+interval = 1;
 
 % [rad]
 theta0 = 0;
@@ -41,13 +45,14 @@ P = [A'; C'; D'; B'];
 
 Ps_2 = bezier(P, 100);
 n_P = size(Ps_2);
-n_i = ceil(t_i/T)*n_P;
+n_i = ceil(t_i/interval)*n_P;
 
+% ------------------------------------
 % Exponential and polynomial curves
 pointA.t = 0;
 pointA.coords = [A; 0];
 
-pointB.t = T;
+pointB.t = interval;
 pointB.coords = [B; pi/2];
 
 points_ = [pointA; pointB];
@@ -59,8 +64,10 @@ xhat_smooths = {};
 for j = 1:length(traj_types)
    [params_syms, ...
     params_sols, ...
-    params_model] = gentrajmodel_2Drobot(sys, traj_types{j}, tf, points_);
+    params_model] = gentrajmodel_2Drobot(sys, traj_types{j}, interval, points_);
     
+    params_sols = double(params_sols);
+
     Ps_ = [];
     fs = [];
     for i = 1:length(t)
@@ -122,6 +129,8 @@ plot(xhat(1), xhat(2), 'gd');
 hold off
 
 axis square
+
+grid
 
 title('Trajectories from A to B', ...
       'interpreter', 'latex');

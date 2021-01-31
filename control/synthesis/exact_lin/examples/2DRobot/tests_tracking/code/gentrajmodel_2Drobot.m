@@ -2,7 +2,7 @@ function [params_syms, ...
           params_sols, ...
           params_model] = ...
           gentrajmodel_2Drobot(sys, traj_type, interval, points)
-
+      
     syms T;
     t = sym('t');
 
@@ -22,14 +22,6 @@ function [params_syms, ...
         case 'exp'
             x = a0 + a1*exp(lambda) + a2*exp(2*lambda);
             y = b0 + b1*exp(lambda) + b2*exp(2*lambda);
-        case 'polynomial-cos'
-            x = a0 + a1*t*cos(2*pi*lambda) + (t^2)*a2*cos(2*pi*2*lambda);
-            y = b0 + b1*t*cos(2*pi*lambda) + (t^2)*b2*cos(2*pi*2*lambda);
-        case 'exp-cos'
-            x = a0 + a1*exp(lambda)*cos(2*pi*lambda) + ...
-                exp(2*lambda)*a2*cos(2*pi*2*lambda);
-            y = b0 + b1*exp(lambda)*cos(2*pi*lambda) + ...
-                exp(2*lambda)*b2*cos(2*pi*2*lambda);
     end
     
     freedom_syms = [];
@@ -70,9 +62,9 @@ function [params_syms, ...
 
     symbs = [r; drdt; model_syms.'; freedom_syms];
     params = [r_syms; dr_syms; model_params.'; freedom_vals];
-
+    
     eqs_bounds_symbs = subs(eqs_bounds, symbs, params);
-
+    
     rbar = q;
     for i = 1:length(r_syms)
         coords_i = r(i);
@@ -95,20 +87,16 @@ function [params_syms, ...
     params = [r_t; drdt_t; rbar_syms; drbar_syms; model_params.'; freedom_vals];
     
     eqs_constraints_symbs = subs(eqs_constraints, symbs, params);
-    
     eqs_symbs = [eqs_bounds_symbs; eqs_constraints_symbs];
-
-    symbs0 = [t; r_syms; dr_syms; rbar_syms; drbar_syms];
-    symbsT = [t; r_syms; dr_syms; rbar_syms; drbar_syms];
-
+    
     eqs_syms = [eqs_bounds; eqs_constraints];
-
+    
     model_syms = sys.descrip.syms;
     model_params = sys.descrip.model_params;
-
+    
     q = sys.kin.q;
     qp = sys.kin.qp;
-
+    
     eqs = [];
     for i = 1:length(points)
         t_i = points(i).t;
@@ -126,19 +114,19 @@ function [params_syms, ...
         eqs_constraints_i = subs(eqs_constraints, symbs, params);
 
         eqs_i = [eqs_bounds_i; eqs_constraints_i];
-
+        
         symbs = [t; T];
         params = [t_i; interval];
-
+        
         eqs_i = subs(eqs_i, symbs, params);
 
         eqs = [eqs; eqs_i];
     end
-
+    
     eqs = subs(eqs, T, interval);
 
     A1 = sys.kin.As{1};
-
+    
     A = -equationsToMatrix(eqs, params_opt);
     
     b = simplify_(A*params_opt + eqs);
