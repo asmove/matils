@@ -1,3 +1,5 @@
+syms t_ T;
+
 % options.traj_type = 'line';
 % options.theta0 = theta0;
 % options.traj_type = 'bezier';
