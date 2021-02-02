@@ -1,10 +1,21 @@
 close all
 
+t = simOut.states.time;
+sol = simOut.states.signals.values;
+
 % ----------- Reference plot -----------
+wb = my_waitbar('Trajectory calculation');
+
+n_t = length(t);
+
 vars = [];
-for i = 1:length(t)
-    vars = [vars; ref_func(t(i))'];
+for i = 1:n_t
+    vars = [vars; double(subs(trajs.', t_, t(i)))];
+
+    wb.update_waitbar(i, n_t);
 end
+
+wb.close_window();
 
 plot_info_q.titles = repeat_str('', 8);
 plot_info_q.ylabels = {'$x_{\star}$', '$y_{\star}$', ...
@@ -20,9 +31,15 @@ hfig_references = my_plot(t, vars, plot_info_q);
 
 % ----- States and reference plot ------
 
+wb = my_waitbar('Trajectory calculation');
+
+n_t = length(t);
+
 ref_vals = [];
 for i = 1:length(t)
-    ref_vals = [ref_vals; ref_func(t(i))'];
+    ref_vals = [ref_vals; double(subs(trajs.', t_, t(i)))];
+
+    wb.update_waitbar(i, n_t);
 end
 
 plot_config.titles = repeat_str('', 3);
@@ -33,7 +50,10 @@ plot_config.grid_size = [3, 1];
 plot_config.pos_multiplots = [1, 2];
 plot_config.markers = {{'-', '--'}, {'-', '--'}};
 
-hfig_states = my_plot(t, {sol(:, 1:3), ref_vals(:, 1:2)}, plot_config);
+traj_xy = ref_vals(:, 1:2);
+ys = {sol(:, 1:3), traj_xy};
+
+hfig_states = my_plot(t, ys, plot_config);
 
 % --------------------------------------
 
@@ -47,136 +67,44 @@ hfig_speeds = my_plot(t, sol(:, 4:5), plot_config);
 % --------------------------------------
 
 % -------------- x-y Plot --------------
-plot_info_q.titles = repeat_str('', 1);
-plot_info_q.ylabels = {'$x$'};
-plot_info_q.xlabels = {'$y$'};
-plot_info_q.grid_size = [1, 1];
+lims = 1.5;
 
 hfig_statesxy = my_figure();
 plot(sol(:, 1), sol(:, 2), '-');
 hold on;
-traj1 = traj_params.trajectory{1};
-plot(traj1(:, 1), traj1(:, 2), '--');
-hold on;
-traj2 = traj_params.trajectory{2};
-plot(traj2(:, 1), traj2(:, 2), '--');
-hold on;
-traj3 = traj_params.trajectory{3};
-plot(traj3(:, 1), traj3(:, 2), '--');
+plot(traj_xy(:, 1), traj_xy(:, 2), '--');
 hold off;
-axis([-3 3 -3 3]);
 legend({'$r(t)$', '$r^{\star}(t)$'}, 'interpreter', 'latex')
 xlabel('$x$ [m]', 'interpreter', 'latex');
 ylabel('$y$ [m]', 'interpreter', 'latex');
 
 axis equal;
-axis([-4 4 -4 4]);
-
-C = sys.kin.C;
-q = sys.kin.q;
-p = sys.kin.p{end};
-v = sym('v', [2, 1]);
-z_1 = sym('z_1');
-x_sym = sym('x_', [6, 1]);
-
-% % ----------- Errors plot --------------
-% syms xppp yppp;
-% 
-% y_ref = add_symsuffix(sys.kin.q(1:2), '_ref');
-% yp_ref = add_symsuffix(sys.kin.qp(1:2), '_ref');
-% ypp_ref = add_symsuffix(sys.kin.qpp(1:2), '_ref');
-% yppp_ref = add_symsuffix([xppp; yppp], '_ref');
-% 
-% e = x_sym(1:2) - y_ref;
-% 
-% ref_sym = [y_ref; yp_ref; ypp_ref; yppp_ref];
-% x_ref_sym = [x_sym(1:6); ref_sym];
-% e_func = @(t, q_p) subs(e, x_ref_sym, [q_p; ref_func(t)]);
-% 
-% errors_sim = [];
-% for i = 1:length(t)
-%     qp_i = sol(i, 1:end)';
-%     errors_sim = [errors_sim; e_func(t(i), qp_i)'];
-% end
-% 
-% % Output equations
-% y1 = sys.kin.q(1);
-% y2 = sys.kin.q(2);
-% 
-% symbs = sys.descrip.syms;
-% model_params = sys.descrip.model_params;
-% 
-% % First derivative for outputs
-% dy1dt = simplify_(dvecdt(y1, [q; p], [C*p; v]));
-% dy2dt = simplify_(dvecdt(y2, [q; p], [C*p; v]));
-% 
-% % Second derivative for outputs
-% d2y1dt2 = dvecdt(dy1dt, [q; p], [C*p; [z_1; v(2)]]);
-% d2y2dt2 = dvecdt(dy2dt, [q; p], [C*p; [z_1; v(2)]]);
-% 
-% % Third derivative for outputs
-% d3y1dt3 = dvecdt(d2y1dt2, [q; p], [C*p; [z_1; v(2)]]);
-% d3y2dt3 = dvecdt(d2y2dt2, [q; p], [C*p; [z_1; v(2)]]);
-% 
-% dydt = [dy1dt; dy2dt];
-% d2ydt2 = [d2y1dt2; d2y2dt2];
-% 
-% pos = subs([x_sym(1:2); dydt; d2ydt2], [q; p; z_1], x_sym);
-% ref_ = [y_ref; yp_ref; ypp_ref];
-% 
-% pos_val = subs(pos, x_ref_sym, [sol(1, 1:end)'; ref_func(0)]);
-% ref_val = subs(ref_, x_ref_sym, [sol(1, 1:end)'; ref_func(0)]);
-% 
-% errors = pos_val - ref_val;
-% e0 = subs(errors, ...
-%           [x_ref_sym; symbs.'], ...
-%           [sol(1, :)'; ref_func(0); model_params.']);
-% e0 = [e0(1); e0(3); e0(5); e0(2); e0(4); e0(6)];
-% 
-% A1 = ctrb_canon(poles_{1});
-% A2 = ctrb_canon(poles_{2});
-% 
-% e_n = canon_Rn(length(poles_{1}), 1)';
-% C = blkdiag(e_n, e_n);
-% 
-% R_syms = sys.descrip.syms(2);
-% R_val = sys.descrip.model_params(2);
-% syms t_;
-% 
-% errors_t = [];
-% for i = 1:length(t)
-%     eAt = expm(blkdiag(A1, A2)*t_);
-%     CAte0 = subs(C*eAt*e0, [t_, R_syms], [t(i), R_val]);
-%     errors_t = [errors_t; CAte0'];
-% end
-% 
-% plot_config.titles = {'', ''};
-% plot_config.xlabels = {'', 't [s]'};
-% plot_config.ylabels = {'$e_x$', '$e_y$'};
-% plot_config.grid_size = [2, 1];
-% plot_config.legends = {{'Real', 'Expected'}, {'Real', 'Expected'}};
-% plot_config.pos_multiplots = [1, 2];
-% plot_config.markers = {{'-', '--'}, {'-', '--'}};
-% 
-% hfig_errors = my_plot(t', {errors_sim, errors_t}, plot_config);
-% 
-% % --------------------------------------
+axis([-lims lims -lims lims]);
 
 % ----------- Torque plot ---------------
 [n_t, n_u] = size(input_torque);
 tu_s = linspace(0, tf, n_t);
 
-plot_info_e.titles = repeat_str('', 2);
-plot_info_e.ylabels = {'$\tau_{\theta}$', '$\tau_{\phi}$'};
-plot_info_e.xlabels = repeat_str('$t$ [s]', 2);
-plot_info_e.grid_size = [2, 1];
+plot_info_u.titles = repeat_str('', 2);
+plot_info_u.ylabels = {'$\tau_{\theta}$', '$\tau_{\phi}$'};
+plot_info_u.xlabels = repeat_str('$t$ [s]', 2);
+plot_info_u.grid_size = [2, 1];
 
-hfigs_u = my_plot(tu_s, input_torque, plot_info_e);
+tu_s = simOut.u.time;
+input_torque = simOut.u.signals.values;
+
+hfigs_u = my_plot(tu_s, input_torque, plot_info_u);
 % --------------------------------------
 
 % ----------- Speed plot ---------------
 C = sys.kin.C;
-qp_x = subs(C*p, [q; p; z_1], x_sym);
+q = sys.kin.q;
+p = sys.kin.p{end};
+
+q_p = [q; p];
+
+x_pq = x_sym(1:length(q_p), 1);
+qp_x = subs(C*p, q_p, x_pq);
 
 symbs = sys.descrip.syms;
 model_params = sys.descrip.model_params;
@@ -185,7 +113,7 @@ qp_t = [];
 wb = my_waitbar('Loading states on time');
 for i = 1:length(t)
     t_i = t(i);
-    qp_i = subs(qp_x, [x_sym; symbs.'], [sol(i, :)'; model_params.'])';
+    qp_i = subs(qp_x, [x_pq; symbs.'], [sol(i, :)'; model_params.'])';
     qp_t = [qp_t; qp_i];
 
     wb = wb.update_waitbar(i, length(t));

@@ -99,3 +99,6 @@ fun_name = 'trajectory_generator';
 
 load_simblock(model_name, path, fun_name, ...
               trajs, var, output)
+
+save_system(model_name);
+close_system(model_name);
