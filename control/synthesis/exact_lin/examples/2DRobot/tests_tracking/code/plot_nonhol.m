@@ -82,6 +82,9 @@ axis equal;
 axis([-lims lims -lims lims]);
 
 % ----------- Torque plot ---------------
+tu_s = simOut.u.time;
+input_torque = simOut.u.signals.values;
+
 [n_t, n_u] = size(input_torque);
 tu_s = linspace(0, tf, n_t);
 
@@ -89,9 +92,6 @@ plot_info_u.titles = repeat_str('', 2);
 plot_info_u.ylabels = {'$\tau_{\theta}$', '$\tau_{\phi}$'};
 plot_info_u.xlabels = repeat_str('$t$ [s]', 2);
 plot_info_u.grid_size = [2, 1];
-
-tu_s = simOut.u.time;
-input_torque = simOut.u.signals.values;
 
 hfigs_u = my_plot(tu_s, input_torque, plot_info_u);
 % --------------------------------------
@@ -151,23 +151,10 @@ plot_info_qp.markers = {{'-', '--'}, {'-', '--'}, ...
                     
 hfig_qpt = my_plot(t, {qp_t, qp_ref}, plot_info_qp);
 
-if(isfield(options, 'Ts'))
-    scenario_folder = 'sampled/';
-elseif(isfield(options, 'sigma_noise'))
-    scenario_folder = 'noisy/';
-elseif(isfield(options, 'model_params'))
-    scenario_folder = 'params_uncertainty/';
-elseif(isempty(options))
-    scenario_folder = '/';
-else
-    error('Must be pwm or sigma_noise.');
-end
-
-saveas(hfig_references, ['../imgs/', scenario_folder, 'references'], 'epsc');
-saveas(hfig_states, ['../imgs/', scenario_folder, 'states'], 'epsc');
-saveas(hfig_statesxy, ['../imgs/', scenario_folder, 'statesxy'], 'epsc');
-%saveas(hfig_errors, ['../imgs/', scenario_folder, 'errors'], 'epsc');
-saveas(hfig_speeds, ['../imgs/', scenario_folder, 'speeds'], 'epsc');
-saveas(hfig_qpt, ['../imgs/', scenario_folder, 'dstates'], 'epsc');
-saveas(hfigs_u, ['../imgs/', scenario_folder, 'input'], 'epsc');
+saveas(hfig_references, ['../imgs/references'], 'epsc');
+saveas(hfig_states, ['../imgs/states'], 'epsc');
+saveas(hfig_speeds, ['../imgs/speeds'], 'epsc');
+saveas(hfig_statesxy, ['../imgs/statesxy'], 'epsc');
+saveas(hfig_qpt, ['../imgs/dstates'], 'epsc');
+saveas(hfigs_u, ['../imgs/input'], 'epsc');
 

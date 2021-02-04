@@ -1,10 +1,10 @@
-n_T = 4;
+n_T = 3;
 T = tf/n_T;
-precision = 1e-2;
+precision = 1e-1;
 limiter = -(1/T)*log(precision);
-scaler = 1.5;
-poles_ = {-scaler*limiter*ones(3, 1), ...
-          -scaler*limiter*ones(3, 1)};
+
+poles_ = {-limiter*ones(3, 1), ...
+          -limiter*ones(3, 1)};
 is_dyn_control = true;
 
 % Load control law

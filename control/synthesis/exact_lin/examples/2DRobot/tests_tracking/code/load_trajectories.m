@@ -1,12 +1,5 @@
 syms t_ T;
 
-% options.traj_type = 'line';
-% options.theta0 = theta0;
-% options.traj_type = 'bezier';
-% 
-% traj = trajgen(options.traj_type, t, T, A, B);
-% dtraj = dtrajgen(options.traj_type, t, T, A, B, 1);
-
 % % Arc-line curve
 % traj_params = struct('');
 % 

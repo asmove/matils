@@ -9,6 +9,6 @@ x0 = [P0; theta0; 1; 0];
 z0 = 0;
 
 % Time vector
-tf = 5;
+tf = 3;
 
 simOut = sim_block_diagram(model_name, x0);
