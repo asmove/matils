@@ -24,11 +24,11 @@ plot_config.xlabels = [repeat_str('', 3), 't [s]'];
 plot_config.ylabels = {'$\tau$ [N $\cdot$ m]', ...
                        '$\omega$ [$\frac{rad}{s}$]', ...
                        '$i$ [A]'};
-plot_config.legends = {{'$\tau(t)$', '$\tau_{ss}(t)$'}, ...
-                       {'$i(t)$', '$\hat{i}(t)$', '$i_{ss}(t)$'}};
+plot_config.legends = {{'$\tau(t)$', '$\tau^{\star}(t)$'}, ...
+                       {'$i(t)$', '$\hat{i}(t)$', '$i^{\star}(t)$'}};
 plot_config.grid_size = [3, 1];
 plot_config.pos_multiplots = [1, 3, 3];
-plot_config.markers = {{'-', '--'}, {'-', '--', 'k--'}};
+plot_config.markers = {{'-', 'k--'}, {'-', '--', 'k--'}};
 
 [hfig_x, axs] = my_plot(tspan, y, plot_config);
 
@@ -61,7 +61,7 @@ axs{1}{1}.YLim = [0, 2];
 % Save folder
 path = [pwd '/../imgs/'];
 
-if(strcmp(model_name, 'pwm_controlled_system'))
+if(strcmp(prefix, 'pwm'))
     u_pwm = simOut.u_pwm;
 
     t_p = u_pwm.time;

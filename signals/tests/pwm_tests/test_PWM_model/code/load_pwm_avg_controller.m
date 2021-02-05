@@ -1,24 +1,27 @@
 B_avg = Vcc_val*B;
 
+C = eye(2);
+D = [0; 0];
+
 sys = ss(A, B_avg, C, D);
-sysd_avg = c2d(sys, Ts_val);
+sysd = c2d(sys, Ts_val);
 
 [~, m] = size(B_avg);
 [n_Ctilde, ~] = size(Ctilde);
 [n_C, ~] = size(C);
 
-[~, m] = size(sysd_avg.B);
+[~, m] = size(sysd.B);
 n = length(A);
 
-phi_aug = double([sysd_avg.A, zeros(n, n_Ctilde);...
+phi_aug = double([sysd.A, zeros(n, n_Ctilde);...
                   -Ctilde, eye(n_Ctilde)]);
 
-gamma_aug = double([sysd_avg.B;...
+gamma_aug = double([sysd.B;...
                     zeros(n_Ctilde, m)]);
 
-C_aug = double([sysd_avg.C, zeros(n_C, n_Ctilde)]);
+C_aug = double([sysd.C, zeros(n_C, n_Ctilde)]);
 
-D_aug = double(sysd_avg.D);
+D_aug = double(sysd.D);
 
 sysd_aug = ss(phi_aug, gamma_aug, C_aug, D_aug, Ts_val);
 

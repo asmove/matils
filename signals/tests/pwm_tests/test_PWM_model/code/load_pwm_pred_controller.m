@@ -1,4 +1,4 @@
-run('load_pwm_avg_controller.m');
+run('load_pwm_controller.m');
 
 % Observer
 p_c_l = [-25; -30];

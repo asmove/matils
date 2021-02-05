@@ -31,32 +31,43 @@ run('load_discrete_pred_controller.m');
 model_name = 'discrete_predict_control_system';
 run('sim_controlled_system.m');
 
-run('plot_discrete_predict_signals.m');
+run('plot_discrete_pred_signals.m');
 
-% % --------- Average-PWM controlled system ---------
-% run('load_pwm_avg_controller.m');
-% 
-% model_name = 'pwm_avg_controlled_system';
-% run('sim_controlled_system.m');
-% 
-% prefix = 'avg_pwm';
-% run('plot_pwm_signals.m');
-% 
-% % --------- Discrete estimate PWM-averaged controlled system ---------
-% run('load_pwm_avg_pred_controller.m');
-% 
-% model_name = 'pwm_avg_pred_controlled_system';
-% run('sim_controlled_system.m');
-% 
-% prefix = 'avg_pwm';
-% run('plot_pwm_pred_signals.m');
-% 
-% % --------- Discrete controller project ---------
-% % --------- PWM controlled system ---------
-% run('load_pwm_controller.m');
-% 
-% model_name = 'pwm_controlled_system';
-% run('sim_controlled_system.m');
-% 
-% prefix = 'pwm';
-% run('plot_pwm_signals.m');
+% --------- Average-PWM controlled system ---------
+run('load_pwm_avg_controller.m');
+
+model_name = 'pwm_avg_controlled_system';
+run('sim_controlled_system.m');
+
+prefix = 'avg_pwm';
+run('plot_pwm_signals.m');
+
+% --------- Discrete estimate PWM-averaged controlled system ---------
+run('load_pwm_avg_pred_controller.m');
+
+model_name = 'pwm_avg_pred_controlled_system';
+run('sim_controlled_system.m');
+
+prefix = 'avg_pwm';
+run('plot_pwm_pred_signals.m');
+
+% --------- Discrete controller project ---------
+% --------- PWM controlled system ---------
+run('load_pwm_controller.m');
+
+model_name = 'pwm_controlled_system';
+run('sim_controlled_system.m');
+
+prefix = 'pwm';
+run('plot_pwm_signals.m');
+
+% --------- Discrete controller project ---------
+% --------- PWM controlled system ---------
+run('load_pwm_pred_controller.m');
+
+model_name = 'pwm_pred_controlled_system';
+run('sim_controlled_system.m');
+
+prefix = 'pwm';
+run('plot_pwm_pred_signals.m');
+
