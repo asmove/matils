@@ -1,12 +1,15 @@
 % Initial conditions
 x0 = [0; 0];
+xhat0 = [0; 0];
+step_ref = torque_ref;
 
-e0 = torque_ref - k_i_val*x0(2);
+e0 = step_ref - Ctilde*xhat0;
 
 load_system(model_name);
 
 simMode = get_param(model_name, 'SimulationMode');
-set_param(model_name, 'SimulationMode', 'normal');
+set_param(model_name, 'SimulationMode', 'normal', ...
+                      'AlgebraicLoopSolver','LineSearch');
 
 cs = getActiveConfigSet(model_name);
 mdl_cs = cs.copy;

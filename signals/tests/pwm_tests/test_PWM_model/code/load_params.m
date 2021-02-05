@@ -70,11 +70,11 @@ u_num = [-Vcc; Vcc];
 alpha_ref = 0.25;
 
 % PWM and sampling periods
-Tpwm_val = 1e-2;
-Ts_val = 1e-1;
+Tpwm_val = 1e-3;
+Ts_val = 1e-2;
 
 % Final time
-t_f = 0.2;
+t_f = 0.5;
 
 % Stationary values
 syms alpha_ Tpwm Ts real;
