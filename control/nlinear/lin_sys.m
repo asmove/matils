@@ -1,6 +1,13 @@
 function linsys =  lin_sys(sys, x_WP, u_WP, Ts, ndelay)
     % States and control variables
-    linvars = [sys.dyn.states; sys.descrip.u];
+    if(isempty(sys.descrip.u))
+        sys.descrip.u = sym('u');
+    end
+    
+    states = sys.dyn.states;
+    u = sys.descrip.u;
+    
+    linvars = [states; u];
     WP = [x_WP; u_WP];
     
     % Workint points
@@ -11,13 +18,35 @@ function linsys =  lin_sys(sys, x_WP, u_WP, Ts, ndelay)
     % Matrices A, B, C and D for each working-point
     linsys.linvars = sym('u%d', size(sys.dyn.states));
     
+    p = sys.kin.p{end};
+    C = sys.kin.C;
+    H = sys.dyn.H;
+    h = sys.dyn.h;
+    Z = sys.dyn.Z;
+    
+    n = length(size(H));
+    Hsym = sym('H_', size(H));
+    
+    Hsym_flatten = reshape(Hsym, [n^2, 1]);
+    invHsym_flatten = reshape(inv(Hsym), [n^2, 1]);
+    H_flatten = reshape(H, [n^2, 1]);
+    invH_flatten = my_subs(invHsym_flatten, Hsym_flatten, H_flatten);
+    invH = reshape(invH_flatten, [n, n]);
+    
+    [n_q, n_u] = size(sys.dyn.Z);
+    
+    f = [C*p; -invH*h];
+    G = [zeros(n_q, n_u); invH*Z];
+    
+    sys.dyn.f = f;
+    sys.dyn.G = G;
+    y = sys.descrip.y;
+    
     % Linearization matrices (arbitrary)
-    linsys.A0 = jacobian(sys.dyn.f + sys.dyn.G*sys.descrip.u, ...
-                         sys.dyn.states);
-    linsys.B0 = jacobian(sys.dyn.f + sys.dyn.G*sys.descrip.u, ...
-                         sys.descrip.u);
-    linsys.C0 = jacobian(sys.descrip.y, sys.dyn.states);
-    linsys.D0 = jacobian(sys.descrip.y, sys.descrip.u);
+    linsys.A0 = jacobian(f + G*u, states);
+    linsys.B0 = jacobian(f + G*u, u);
+    linsys.C0 = jacobian(y, states);
+    linsys.D0 = jacobian(y, u);
         
     % Matrices on the provided working-point
     A = subs(linsys.A0, linvars, WP);
@@ -42,13 +71,15 @@ function linsys =  lin_sys(sys, x_WP, u_WP, Ts, ndelay)
                                         sys.descrip.model_params));
             
     % State space representation
+    linsys.A
+    linsys.B
+    linsys.C
+    linsys.D
     sys_cont.ss = ss(linsys.A, linsys.B, linsys.C, linsys.D);
     
     % Poles, nulls, controlability and observability
-    [sys_cont.nulls, ...
-     sys_cont.poles, ...
-     sys_cont.is_ctrb, ...
-     sys_cont.is_obsv] = plant_behaviour(sys_cont.ss);
+    [sys_cont.nulls, sys_cont.poles, ...
+     sys_cont.is_ctrb, sys_cont.is_obsv] = plant_behaviour(sys_cont.ss);
     
     % Discretized system
     sys1_disc.ts = Ts;
