@@ -6,11 +6,11 @@ function [R, F] = entkopplungVMS(sys,ew)
 	C = sys.c;
 	D = sys.d;
 
-	% Größe der Matrizen
+	% Grï¿½ï¿½e der Matrizen
 	[n,p] = size(B);
 	[q,n] = size(C);
 
-	% Überprüfung, ob das System quadratisch ist
+	% ï¿½berprï¿½fung, ob das System quadratisch ist
 	if p~=q
 	   error('The system MUST be quadratic i.e. number of inputs = number of outputs!');
 	end
@@ -18,7 +18,7 @@ function [R, F] = entkopplungVMS(sys,ew)
 	% Differenzordnung
 	[d di] = differenzordnung(sys);
 
-	% Differenzordnung ist gleich zu der Anzahl der Zustände des Systems
+	% Differenzordnung ist gleich zu der Anzahl der Zustï¿½nde des Systems
 	if d == n 
 	    
 	    % Bestimmung der 'd' ersten Parameter- und Eigenvektoren
@@ -42,8 +42,6 @@ function [R, F] = entkopplungVMS(sys,ew)
 		laufende_Lage = laufende_Lage + Anzahl_ew;
 	    end
 	    
-	    Vr
-	    
 	    R = real(-P/(Vr));
 	    F = real(inv(C/(B*R-A)*B));
 
@@ -53,7 +51,7 @@ function [R, F] = entkopplungVMS(sys,ew)
 	    % Berechnung der Nullstellen des Systems
 	    [nst, x0, u0] = nulldynamik(sys);
 	    
-	    % Wenn die Gleichung nz = n - d erfüllt ist
+	    % Wenn die Gleichung nz = n - d erfï¿½llt ist
 	    if length(nst) == n-d
 		
 		% Bestimmung der 'd' ersten Parameter- und Eigenvektoren
@@ -92,7 +90,7 @@ function [R, F] = entkopplungVMS(sys,ew)
 	    R = real(-P*inv(Vr));
 	    F = real(inv(C*inv(B*R-A)*B));
 	    
-	    % Wenn die Gleichung nz = n - d nicht erfüllt ist 
+	    % Wenn die Gleichung nz = n - d nicht erfï¿½llt ist 
 	    else
 		error('Das System ist nicht entkoppelbar!')
 	    end

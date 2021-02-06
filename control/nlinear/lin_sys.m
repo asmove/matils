@@ -1,4 +1,4 @@
-function linsys =  lin_sys(sys, x_WP, u_WP, Ts, ndelay)
+function linsys =  lin_sys(sys, x_WP, u_WP, Ts)
     % States and control variables
     if(isempty(sys.descrip.u))
         sys.descrip.u = sym('u');
@@ -13,6 +13,7 @@ function linsys =  lin_sys(sys, x_WP, u_WP, Ts, ndelay)
     % Workint points
     linsys.x_WP = x_WP;
     linsys.u_WP = u_WP;
+    
     linsys.y_WP = subs(sys.descrip.y, linvars, WP);
     
     % Matrices A, B, C and D for each working-point
@@ -90,11 +91,7 @@ function linsys =  lin_sys(sys, x_WP, u_WP, Ts, ndelay)
      sys1_disc.poles, ...
      sys1_disc.is_ctrb, ...
      sys1_disc.is_obsv] = plant_behaviour(sys1_disc.ss);
-    
-    % Augmented state space representation - with input-delay
-    sys2_disc.ts = Ts;
-    sys2_disc.ss = inputdelay_dss(sys1_disc.ss, ndelay);
      
     linsys.continuous.systems = {sys_cont};
-    linsys.discrete.systems = {sys1_disc, sys2_disc};
+    linsys.discrete.systems = {sys1_disc};
 end
