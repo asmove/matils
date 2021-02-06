@@ -79,14 +79,14 @@ if(strcmp(prefix, 'pwm'))
     axs{1}{1}.FontSize = 25;
     axs{1}{1}.YLim = [0, scaler*Vcc_val];
 
-    fname = '_pwm';
+    fname = '_pwm_obsv';
     saveas(hfig_pwm, [path, prefix, fname], 'epsc');
 end
 
-fname = '_x';
+fname = '_x_obsv';
 saveas(hfig_x, [path, prefix, fname], 'epsc');
 
-fname = '_alpha';
+fname = '_alpha_obsv';
 saveas(hfig_alpha, [path, prefix, fname], 'epsc');
 
 

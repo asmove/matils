@@ -49,8 +49,8 @@ axs{1}{1}.FontSize = 25;
 % Save folder
 path = [pwd '/../imgs/'];
 
-fname = 'discrete_x';
+fname = 'discrete_x_obsv';
 saveas(hfig_x, [path, fname], 'epsc');
 
-fname = 'discrete_u';
+fname = 'discrete_u_obsv';
 saveas(hfig_u, [path, fname], 'epsc');
