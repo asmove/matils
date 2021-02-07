@@ -3,6 +3,7 @@ C_ = C;
 D = 0;
 
 % Delay number
+% FIXME: nds_o != 0 STILL NOT WORKING!
 nds_i = 3;
 nds_o = 0;
 
@@ -13,6 +14,6 @@ nds_o = 0;
 s_nds_i = sum(nds_i);
 s_nds_o = sum(nds_o);
 
-Ctilde = [Ctilde, zeros(n_Ctilde, s_nds_i)];
+Ctilde = [Ctilde, zeros(n_Ctilde, s_nds_i + s_nds_o)];
 
 u_ns0 = zeros(s_nds_i + s_nds_o, 1);
