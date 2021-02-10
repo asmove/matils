@@ -89,14 +89,14 @@ scaler = 1.2;
 axs{1}{1}.FontSize = 25;
 axs{1}{1}.YLim = [-scaler*Vcc_val, scaler*Vcc_val];
 
-fname = '_pwm_obsv';
+fname = '_pwm';
 saveas(hfig_pwm, [path, prefix, fname], 'epsc');
 
 
-fname = '_x_obsv';
+fname = '_x';
 saveas(hfig_x, [path, prefix, fname], 'epsc');
 
-fname = '_alpha_obsv';
+fname = '_alpha';
 saveas(hfig_alpha, [path, prefix, fname], 'epsc');
 
 

@@ -4,7 +4,7 @@ D = 0;
 
 % Delay number
 % FIXME: nds_o != 0 STILL NOT WORKING!
-nds_i = 3;
+nds_i = n_i;
 nds_o = 0;
 
 [Phi, Gamma, C, D] = delay_io(Phi, Gamma, C, D, nds_i, nds_o);

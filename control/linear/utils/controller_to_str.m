@@ -1,4 +1,4 @@
-function K_str = controller_to_str(K, is_bracketed_index, has_semicolon)
+function K_str = lincontroller_to_str(K, is_bracketed_index, has_semicolon)
 % Description: Generates a controller code for copy pasting it into
 % controller
 % Input: 
