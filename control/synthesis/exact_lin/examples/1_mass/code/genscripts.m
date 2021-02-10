@@ -11,7 +11,9 @@ function [] = genscripts(sys, model_name, script_struct)
     paths = script_struct.paths;
     
     for i = 1:length(paths)
-        block = sf.find('Path', paths{i}, '-isa', 'Stateflow.EMChart');
+        paths_i = paths{i};
+        
+        block = sf.find('Path', paths_i, '-isa', 'Stateflow.EMChart');
         
         expr_sym = script_struct.expr_syms{i};
         output = script_struct.Outputs{i};
@@ -19,13 +21,12 @@ function [] = genscripts(sys, model_name, script_struct)
         fun_name = script_struct.fun_names{i};
         expr_sym = subs(script_struct.expr_syms{i}, symbs, vals);
         
-        matlabFunction(expr_sym, 'File', fun_name, ...
-                                 'Vars', vars_i, ...
-                                 'Outputs', output);
+        vars_i
+        a = matlabFunction(expr_sym, 'File', fun_name, 'Vars', vars_i, 'Outputs', output);
         
         fname = [fun_name, '.m'];
         file_handle = fopen(fname, 'r');
-
+        
         f_call = fgets(file_handle, nchar);
         script_body = f_call;
         

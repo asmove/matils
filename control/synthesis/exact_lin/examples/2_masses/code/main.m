@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-run('~/github/Robotics4fun/examples/2_masses/code/main.m');
+run('~/github/quindim/examples/2_masses/code/main.m');
 
 run('./load_plant.m');
 run('./load_control.m');

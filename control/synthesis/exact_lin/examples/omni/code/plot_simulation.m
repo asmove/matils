@@ -80,7 +80,7 @@ A3 = ctrb_canon(poles_v(5:6));
 
 A = double(blkdiag(A1, A2, A3));
 
-n_p = length(poles_{1});
+n_p = length(out.poles{1});
 e_n = canon_Rn(n_p, 1)';
 C = double(blkdiag(e_n, e_n, e_n));
 

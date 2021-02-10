@@ -17,10 +17,11 @@ function [As, Bs, A_delta, B_delta] = lindyn(poles)
 
         % Unitary matrices
         Ai = ctrb_canon(poles_);
-
+        Ai
+        
         bi = canon_Rn(m, i).';
         Bi = [zeros(n_p - 1, m); bi];
-
+        
         while(~is_ctrb(Ai, Bi))
             bi = canon_Rn(n, i);
             Bi = [zeros(delta_i-1, 1); bi];
