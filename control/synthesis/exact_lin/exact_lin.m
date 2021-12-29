@@ -1,4 +1,4 @@
-function out = exact_lin(f, G, y, x)
+function out = exact_lin(f, G, y, x, poles)
 % Description: Exact linearization algorithm
 % https://www.overleaf.com/read/sgxkhqvfhpyz
 % Input:
@@ -60,7 +60,10 @@ function out = exact_lin(f, G, y, x)
     end
     
     z_tilde = transfs - ref_vals;
-    poles = request_poles_deltas(deltas);
+    
+    if(nargin==4)
+        poles = request_poles_deltas(deltas);
+    end
     
     % Linear dynamic
     [As, Bs, A_delta, B_delta] = lindyn(poles);
@@ -69,6 +72,7 @@ function out = exact_lin(f, G, y, x)
     
     I_n = eye(length(Delta));
     Delta_sym = sym('D_', size(Delta));
+    
     inv_Delta_sym = inv(Delta_sym);
     
     Delta_sym_flatten = reshape(Delta_sym, [n_D^2, 1]);

@@ -1,11 +1,12 @@
-function [] = genscripts(sys, model_name, script_struct)
+function [] = genscripts(sys, ctx, script_struct)
     symbs = sys.descrip.syms;
     vals = sys.descrip.model_params;
 
     % Read buffer
     nchar = 100000;
-
-    open_system(model_name);
+    
+    bdclose all;
+    open_system(ctx.model_path);
     sf = Simulink.Root;
     
     paths = script_struct.paths;
@@ -21,7 +22,6 @@ function [] = genscripts(sys, model_name, script_struct)
         fun_name = script_struct.fun_names{i};
         expr_sym = subs(script_struct.expr_syms{i}, symbs, vals);
         
-        vars_i
         a = matlabFunction(expr_sym, 'File', fun_name, 'Vars', vars_i, 'Outputs', output);
         
         fname = [fun_name, '.m'];
@@ -50,11 +50,12 @@ function [] = genscripts(sys, model_name, script_struct)
         file_handle = fopen(fname, 'w');
         fprintf(file_handle, '%s', script_body);    
         fclose(file_handle);
+        
         block.Script = script_body;
         delete(fname);
     end
     
-    save_system(model_name, [],'OverwriteIfChangedOnDisk',true);
-    close_system(model_name);
+    save_system(ctx.model_path, [],'OverwriteIfChangedOnDisk',true);
+    close_system(ctx.model_path);
 end
     

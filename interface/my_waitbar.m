@@ -85,10 +85,6 @@ classdef my_waitbar
             obj.previous_t = tic;
         end
         
-        function pauseButtonCallback(hSource, eventdata)
-            pauseWaitbar = ~pauseWaitbar;
-        end
-        
         function cancelButtonCallback(hSource, eventdata)
             cancelWaitbar = 1;
         end
@@ -98,7 +94,6 @@ classdef my_waitbar
             
             handles = [];
             for i = 1:length(hs)
-                % XXX: Improve unique id
                 unique_id = hs(i).UserData;
                 
                 if(strcmp(unique_id, obj.idx))
@@ -238,9 +233,9 @@ classdef my_waitbar
             
             if(~isempty(obj.tf_real_vec))
                % Erase waitbar
-                tf = obj.tf_real_vec(end);
+                t_f = obj.tf_real_vec(end);
 
-                fprintf('Elapsed time is %.6f seconds.\n', tf); 
+                fprintf('Elapsed time is %.6f seconds.\n', t_f); 
             end
             
             delete(h);

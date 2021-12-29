@@ -70,8 +70,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
     end
     
     if((nrows >= MAX_ROWS_DIV) || (ncols >= MAX_COLS_DIV))
-        msg = ['One recommends the maximum number of ', ...
-               num2str(MAX_COLS_DIV)];
+        msg = ['One recommends the maximum number of ', num2str(MAX_COLS_DIV)];
         warning(msg);
     end
     
@@ -90,6 +89,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
     
     n_subplots = nrows*ncols;
     remaind_n = rem(n, n_subplots);
+    
     n_windows = (n - remaind_n)/n_subplots;
     
     h_legends = {};
