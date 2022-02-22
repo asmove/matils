@@ -30,8 +30,8 @@ function sim = gen_sim(sys, q_p, u, n)
     
     qp_sym = [sys.kin.q; sys.kin.p{end}];
     
-    H = my_subs(H, [sys.kin.q; sys.kin.p], q_p);
-    h = my_subs(h, [sys.kin.q; sys.kin.p], q_p);
+    H = my_subs(H, qp_sym, q_p);
+    h = my_subs(h, qp_sym, q_p);
     
     H_num = my_subs(H, qp_sym, q_p);
     pp = my_subs(inv(H_num)*(-h + Z*u), qp_sym, q_p);

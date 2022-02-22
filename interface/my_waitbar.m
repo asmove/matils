@@ -53,7 +53,11 @@ classdef my_waitbar
         end
     
         function obj = my_waitbar(name)
-            obj.name = name;
+            if(nargin==0)
+                obj.name = '';
+            else
+                obj.name = name;
+            end
             
             obj.t_curr_str = datestr(seconds(0), 'HH:MM:SS');
             obj.t_end_str = datestr(seconds(0), 'HH:MM:SS');
