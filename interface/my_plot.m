@@ -1,4 +1,4 @@
-function [hfigs, axs] = my_plot(t, x, plot_config)
+        function [hfigs, axs] = my_plot(t, x, plot_config)
     MAX_ROWS_DIV = 4;
     MAX_COLS_DIV = 4;
     
@@ -173,8 +173,7 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
                         axis(plot_config.axis_style)
                     end
                     
-                    legend(legends_j, ...
-                           'interpreter', 'latex');
+                    legend(legends_j, 'interpreter', 'latex');
                     
                     hold off;
 
@@ -209,6 +208,9 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
             title(titles{idx}, 'interpreter', 'latex');
             xlabel(xlabels{idx}, 'interpreter', 'latex');
             ylabel(ylabels{idx}, 'interpreter', 'latex');
+            
+            set(gca,'TickLabelInterpreter','latex')
+            
             grid;
         end
         
@@ -275,6 +277,9 @@ function [hfigs, axs] = my_plot(t, x, plot_config)
             title(titles{k+i-1}, 'interpreter', 'latex');
             xlabel(xlabels{k+i-1}, 'interpreter', 'latex');
             ylabel(ylabels{k+i-1}, 'interpreter', 'latex');
+            
+            set(gca,'TickLabelInterpreter','latex')
+            
             grid;
             
             k = k+1;

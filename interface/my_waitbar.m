@@ -3,7 +3,7 @@ classdef my_waitbar
         idx = '';
         
         % Mask for message ovre progress bar
-        time_mask = '%3d.%s %% - %s [%%/s] [%s - %s]';
+        time_mask = '%3d.%s %% - %s [%%/s] [%s - %s - %s]';
         
         % Message on title
         name = '';
@@ -16,6 +16,7 @@ classdef my_waitbar
         % Real time
         t_curr_str = '';
         t_end_str = '';
+        t_left_str = '';
         
         % Real time
         t_real_vec = [];
@@ -69,6 +70,11 @@ classdef my_waitbar
             obj.wb = waitbar(0, obj.msg,  'Name', obj.name, ... 
                              'CreateCancelBtn', cancel_callback);
             
+            % Change the Units Poreperty of the figure and all the children
+            set(findall(obj.wb),'Units', 'normalized');
+            % Change the size of the figure
+            set(obj.wb, 'Position', [0.25 0.4 0.3 0.08]);            
+                        
             obj.wb.UserData = generate_guid;
             obj.idx = obj.wb.UserData;
             
@@ -127,11 +133,11 @@ classdef my_waitbar
             obj.wb.Name = name;
         end
         
-        function obj = update_waitbar(obj, t, tf)
+        function [] = update(obj, t, tf)
             dt = toc(uint64(obj.previous_t));
             obj.previous_t = tic;
             obj.t_prev = obj.t_real;
-
+            
             obj.tf = tf;
             obj.t_sim = t;
             
@@ -167,7 +173,7 @@ classdef my_waitbar
             
             perc = [part1_perc, '.', part2_perc];
             % ---------------
-
+            
             SIG_NUMBERS = 3;
             
             if((perc_num < eps))
@@ -205,6 +211,7 @@ classdef my_waitbar
             if(perc < eps)
                 t_f = 0;
                 obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');
+                obj.t_left_str = datestr(seconds(t_f) - seconds(obj.t_real), 'HH:MM:SS');
             else
                 t_f = floor((100/obj.speed)*100)/100;
                 
@@ -214,12 +221,15 @@ classdef my_waitbar
                 else
                     obj.t_end_str = datestr(seconds(t_f), 'HH:MM:SS');
                 end
+                
+                obj.t_left_str = datestr(seconds(t_f) - seconds(obj.t_real), 'HH:MM:SS');
             end
             
             % ---------------
             
             obj.msg = sprintf(obj.time_mask, part1_perc, part2_perc, ...
-                              speed_str, obj.t_curr_str, obj.t_end_str);
+                              speed_str, obj.t_curr_str, ...
+                              obj.t_left_str, obj.t_end_str);
 
             obj.t_real_vec = [obj.t_real_vec, obj.t_real];
             obj.speed_vec = [obj.speed_vec; obj.speed];
